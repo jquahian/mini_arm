@@ -74,7 +74,6 @@ def solve_joint_2_3_angles(j4_x, j4_z):
     
     j2_theta = round(math.degrees(j2_theta), 3)
     j3_theta = round(math.degrees(j3_theta), 3)
-    
     joint_angles = [j2_theta, j3_theta]
     
     return joint_angles

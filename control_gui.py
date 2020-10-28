@@ -28,9 +28,9 @@ while True:
         
     if event == 'Home All':
         controller.move_axis_absolute(controller.oboard[0], 0, 5, 0)
-        controller.move_axis_absolute(controller.oboard[0], 0, 5, 0)
+        controller.move_axis_absolute(controller.oboard[0], 1, 5, 0)
         controller.move_axis_absolute(controller.oboard[1], 0, 5, 0)
-        controller.move_axis_absolute(controller.oboard[1], 0, 1, 0)
+        controller.move_axis_absolute(controller.oboard[1], 1, 1, 0)
 
     if event == 'Go':
         controller.move_to_point(values[4], values[6])

@@ -1,10 +1,15 @@
 import PySimpleGUI as sg
+import controller
 
 sg.theme('DarkAmber')   # Add a touch of color
 # All the stuff inside your window.
-layout = [[sg.Text('Some text on Row 1')],
-          [sg.Text('Enter something on Row 2'), sg.InputText()],
-          [sg.Button('Connect'), sg.Button('Calibrate All'), sg.Button('Restart All')],
+layout = [[sg.Button('Connect'), sg.Button('Calibrate All'), sg.Button('Reboot All')],
+          [sg.Text('Manual Joint Control')],
+          [sg.Text('J1 Angle'), sg.Input(), sg.Button('Set J1'), sg.Text('J2 Angle'), sg.Input(), sg.Button('Set J2')], [
+    sg.Text('J3 Angle'), sg.Input(), sg.Button('Set J3'), sg.Text('J4 Angle'), sg.Input(), sg.Button('Set J4')],
+          [sg.Text('Move to Point')],
+    [sg.Text('X:'), sg.Input(), sg.Text('Y:'), sg.Input(),
+     sg.Text('Z:'), sg.Input(), sg.Button('Go')],
           [sg.Button('Exit')]]
 
 # Create the Window
@@ -14,6 +19,26 @@ while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED or event == 'Exit':  # if user closes window or clicks cancel
         break
-    print('You entered ', values[0])
+    
+    if event == 'Connect':
+        controller.connect_to_boards()
+        
+    if event == 'Reboot All':
+        controller.reboot_all_odrive()
+        
+    if event == 'Go':
+        controller.move_to_point(values[4], values[5], values[6])
+        
+    if event == 'Set J1':
+        controller.move_axis_absolute(controller.oboard[0], 0, 5, values[0])
+        
+    if event == 'Set J2':
+        controller.move_axis_absolute(controller.oboard[0], 1, 5, values[1])
+        
+    if event == 'Set J3':
+        controller.move_axis_absolute(controller.oboard[1], 0, 5, values[3])
+
+    if event == 'Set J4':
+        controller.move_axis_absolute(controller.oboard[1], 1, 5, values[4])
 
 window.close()

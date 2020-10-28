@@ -1,8 +1,9 @@
 import math
 
 # test joint 4 coords
-j4_x = 155.6
-j4_z = 210.5
+# j4_x = 155.6
+# j4_y = 0
+# j4_z = 210.5
 
 # legnth offset for added tools
 effector_length = 0
@@ -20,7 +21,7 @@ j3_theta_min = 90
 j3_theta_max = 180
 
 # inverse kin
-def solve_joint_2_3_angles():    
+def solve_joint_2_3_angles(j4_x, j4_z):
     # determine length from base to end effector
     j1_effector_length = math.sqrt(pow(j4_x, 2) + pow(j4_z, 2))
     
@@ -71,15 +72,15 @@ def solve_joint_2_3_angles():
     # determnine joint angle for joint 2
     j2_theta = j2_theta_alpha + j2_theta_beta
     
-    joint_angles = [round(math.degrees(j2_theta), 3), round(math.degrees(j3_theta), 3)]
+    j2_theta = round(math.degrees(j2_theta), 3)
+    j3_theta = round(math.degrees(j3_theta), 3)
     
-    print(
-        f'for coordinates x: {j4_x}, z: {j4_z}, joint 2 angle: {joint_angles[0]} degrees, joint 3 angle: {joint_angles[1]} degrees')
+    joint_angles = [j2_theta, j3_theta]
     
     return joint_angles
 
 # check if the supplied coordinates are within the reach of the robot and within safety limits
-def limit_check():
+def limit_check(j4_x, j4_z):
     full_robot_radius = round(j1_j2_length + j2_j3_length + j3_j4_length, 3)
     minimum_z = round(j1_j2_length - j3_j4_length, 3)
     maximum_x_y = round(j2_j3_length + j3_j4_length, 3)
@@ -90,8 +91,8 @@ def limit_check():
     if j4_z > full_robot_radius or j4_z < minimum_z:
         return print(
             f'z coordinate outside of bounds.  Must be below z = {full_robot_radius} and above z = {minimum_z}')
-        
-    solve_joint_2_3_angles()
+
+    return solve_joint_2_3_angles(j4_x, j4_z)
 
 # determine if we have inputs with multiple angle solution
 def sin_ambiguity_check(solved_angle, known_angle):
@@ -110,6 +111,3 @@ def verify_ambiguious_angle(verified_angle, verified_edge_length_1, verified_edg
                                 / (-2 * verified_edge_length_1 * verified_edge_length_2)))
     
     return verified_angle
-
-limit_check()
-

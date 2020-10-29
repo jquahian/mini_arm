@@ -1,6 +1,6 @@
 import math
 
-# test joint 4 coords
+# # test joint 4 coords
 # j4_x = 155.6
 # j4_y = 0
 # j4_z = 210.5
@@ -14,19 +14,32 @@ j2_j3_length = 77.279
 j3_j4_length = 94.054 + effector_length
 
 # set joint 2 and joint 3 angle minimums and maximums
+j1_theta_min = -180
+j1_theta_max = 180
+
 j2_theta_min = 90
 j2_theta_max = 270
 
 j3_theta_min = 90
 j3_theta_max = 180
 
+# initial starting conditions
+joint_angles = [0, 0, 0, 0]
+
 # inverse kin
-def solve_joint_2_3_angles(j4_x, j4_z):
+def solve_joint_2_3_angles(j4_x, j4_y, j4_z):
+    # solve j1 rotation to get arm into position on the y-axis
+    # determine radius of arm as projected on xy plane
+    # j1_theta = math.asin(j4_y/j4_x)
+    
     # determine length from base to end effector
     j1_effector_length = math.sqrt(pow(j4_x, 2) + pow(j4_z, 2))
     
     # angle between j1 and effector on the xz plane relative to the (horizontal) x axis
     j1_effector_xz_theta = math.acos(j4_x/j1_effector_length)
+    
+    print(j1_effector_length * math.cos(j1_effector_xz_theta))
+    print(j1_effector_length * math.sin(j1_effector_xz_theta))
 
     # angle between j1 and effector on the xz plane relative to the (vertical) z axis
     j1_effector_xz_cotheta = math.radians(90) - j1_effector_xz_theta
@@ -79,7 +92,7 @@ def solve_joint_2_3_angles(j4_x, j4_z):
     return joint_angles
 
 # check if the supplied coordinates are within the reach of the robot and within safety limits
-def limit_check(j4_x, j4_z):
+def limit_check(j4_x, j4_y, j4_z):
     full_robot_radius = round(j1_j2_length + j2_j3_length + j3_j4_length, 3)
     minimum_z = round(j1_j2_length - j3_j4_length, 3)
     maximum_x_y = round(j2_j3_length + j3_j4_length, 3)
@@ -91,7 +104,7 @@ def limit_check(j4_x, j4_z):
         return print(
             f'z coordinate outside of bounds.  Must be below z = {full_robot_radius} and above z = {minimum_z}')
 
-    return solve_joint_2_3_angles(j4_x, j4_z)
+    return solve_joint_2_3_angles(j4_x, j4_y, j4_z)
 
 # determine if we have inputs with multiple angle solution
 def sin_ambiguity_check(solved_angle, known_angle):

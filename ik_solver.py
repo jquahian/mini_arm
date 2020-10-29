@@ -23,9 +23,6 @@ j2_theta_max = 270
 j3_theta_min = 90
 j3_theta_max = 180
 
-# initial starting conditions
-joint_angles = [0, 0, 0, 0]
-
 # inverse kin
 def solve_joint_2_3_angles(j4_x, j4_y, j4_z):
     # solve j1 rotation to get arm into position on the y-axis

@@ -69,19 +69,9 @@ def move_axis_absolute(drive_num, axis_num, axis_gear_ratio, degrees):
 	if axis_num == 0:
 		oboard[drive_num].axis0.controller.input_pos = calculate_motor_turns(
 			axis_gear_ratio, degrees)
-		if drive_num == 0:
-			ik.joint_angles[0] = degrees
-		elif drive_num == 1:
-			ik.joint_angles[3] = degrees
-	elif drive_num == 1:
+	elif axis_num == 1:
 		oboard[drive_num].axis1.controller.input_pos = calculate_motor_turns(
 			axis_gear_ratio, degrees)
-		if drive_num == 0:
-			ik.joint_angles[1] = degrees
-		elif drive_num == 1:
-			ik.joint_angles[4] = degrees
-	
-	print(ik.joint_angles)	
 
 def calculate_motor_turns(gear_ratio, input_degrees):
 	# calculates the number of motor turns to get to degrees based on gear ratio

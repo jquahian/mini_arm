@@ -1,4 +1,3 @@
-import ik_solver as ik
 import time
 import odrive
 from odrive.enums import *
@@ -63,6 +62,10 @@ def calibrate_all():
 def move_axis_absolute(drive_num, axis_num, axis_gear_ratio, degrees):
 	global oboard
 	global is_connected
+ 
+	if is_connected == False:
+		print('arm not connected')
+		return
 
 	degrees = float(degrees)
  
@@ -79,6 +82,12 @@ def calculate_motor_turns(gear_ratio, input_degrees):
 	return required_turns
 
 def move_to_point(j1_theta, j2_theta, j3_theta, x, y, z):
+	global is_connected
+ 
+	if is_connected == False:
+		print('arm not connected')
+		return
+    
 	# move joint 1
 	move_axis_absolute(oboard[0], 0, 5, j1_theta)
 

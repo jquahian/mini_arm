@@ -69,7 +69,7 @@ while True:
         limit.angle_limit_check(4, values[3])
 
     if event == 'Set All':
-        for i in range(3):
+        for i in range(4):
             joint_num = i + 1
             limit.angle_limit_check(joint_num, values[i])
             pass

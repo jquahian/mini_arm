@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
 import controller
+import limit_set as limit
 
 sg.theme('DarkAmber')
 
@@ -53,24 +54,24 @@ while True:
         joint_angles[3] = 0
 
     if event == 'Go':
-        controller.move_to_point(values[4], values[5], values[6])
+        limit.coordinate_limit_check(values[4], values[5], values[6])
         
     if event == 'Set J1':
-        controller.move_axis_absolute(0, 0, 5, values[0])
+        limit.angle_limit_check(1, values[0])
         
     if event == 'Set J2':
-        controller.move_axis_absolute(0, 1, 5, values[1])
+        limit.angle_limit_check(2, values[1])
         
     if event == 'Set J3':
-        controller.move_axis_absolute(1, 0, -5, values[2])
+        limit.angle_limit_check(3, values[2])
 
     if event == 'Set J4':
-        controller.move_axis_absolute(1, 1, 1, values[3])
+        limit.angle_limit_check(4, values[3])
 
     if event == 'Set All':
-        controller.move_axis_absolute(0, 0, 5, values[0])
-        controller.move_axis_absolute(0, 1, 5, values[1])
-        controller.move_axis_absolute(1, 0, -5, values[2])
-        controller.move_axis_absolute(1, 1, 1, values[3])
+        for i in range(3):
+            joint_num = i + 1
+            limit.angle_limit_check(joint_num, values[i])
+            pass
 
 window.close()

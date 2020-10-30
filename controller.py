@@ -78,21 +78,15 @@ def calculate_motor_turns(gear_ratio, input_degrees):
 	required_turns = (input_degrees * gear_ratio)/360
 	return required_turns
 
-def move_to_point(j4_x, j4_y, j4_z):
-	j4_x = float(j4_x)
-	j4_y = float(j4_y)
-	j4_z = float(j4_z)
-
-	joint_angles = ik.limit_check(j4_x, j4_y, j4_z)
-
-	print(
-		f'for coordinates x: {j4_x}, y: {j4_y}, z: {j4_z}, joint 2 angle: {joint_angles[0]} degrees, joint 3 angle: {joint_angles[2]} degrees')
+def move_to_point(j1_theta, j2_theta, j3_theta, x, y, z):
+	# move joint 1
+	move_axis_absolute(oboard[0], 0, 5, j1_theta)
 
 	# move joint 2
-	move_axis_absolute(oboard[0], 1, 5, joint_angles[0])
+	move_axis_absolute(oboard[0], 1, 5, j2_theta)
 
 	# move joint 3
-	move_axis_absolute(oboard[1], 0, -5, joint_angles[1])
+	move_axis_absolute(oboard[1], 0, -5, j3_theta)
 
-	print(f'Joint 4 now at coordinates x: {j4_x}, y: {j4_y}, z: {j4_z}')
- 
+	print(
+		f'for coordinates x: {x}, y: {y}, z: {y}, joint 1 angle: {j1_theta} joint 2 angle: {j2_theta} degrees, joint 3 angle: {j3_theta} degrees') 

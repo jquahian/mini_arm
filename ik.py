@@ -1,4 +1,5 @@
 import math
+from controller import move_to_point
 
 # fixed joint lengths
 j1_j2_length = 100
@@ -24,9 +25,11 @@ def solve_ik(x, y, z):
     # find rotation of joint 3
     j3_theta = math.degrees(math.radians(180) - phi_3)
     
+    # angle between the j2_effector_length and horizontal x-axis    
     phi_2 = math.acos((pow(j3_j4_length, 2) - pow(j2_j3_length, 2) -
                        pow(j2_effector_length, 2)) / (-2 * j2_j3_length * j2_effector_length))
     
+    # angle between the j2_effector_length and the vertical z-axis
     phi_1 = math.asin((z - j1_j2_length)/j2_effector_length)
     
     # find rotation of joint 2 -- relative to the horizontal axis
@@ -36,7 +39,8 @@ def solve_ik(x, y, z):
     print(f'joint 2 target angle: {j2_theta}')
     print(f'joint 3 target angle: {j3_theta}')
     
-    return (j1_theta, j2_theta, j3_theta)
+    move_to_point(j1_theta, j2_theta, j3_theta, x, y, z)
+    return (j1_theta, j2_theta, j3_theta, x, y, z)
 
-## testing only!
+# # testing only!
 # solve_ik(106.066, 106.066, 130)

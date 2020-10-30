@@ -38,4 +38,5 @@ def solve_ik(x, y, z):
     
     return (j1_theta, j2_theta, j3_theta)
 
-solve_ik(106.066, 106.066, 130)
+## testing only!
+# solve_ik(106.066, 106.066, 130)

@@ -1,5 +1,5 @@
 import math
-from controller import move_to_point
+import limit_set as limit
 
 # fixed joint lengths
 j1_j2_length = 100
@@ -47,10 +47,10 @@ def solve_ik(x, y, z):
     print(
         f'joint 3 target angle: {j3_theta} -- value to be passsed to motor is {j3_theta_motor}')
     
-    # angle checks here
+    # angle checks
+    limit.multi_angle_limit_check([j1_theta_motor, j2_theta_motor, j3_theta_motor, 0])
     
-    move_to_point(j1_theta_motor, j2_theta_motor, j3_theta_motor, x, y, z)
     return (j1_theta_motor, j2_theta_motor, j3_theta_motor, x, y, z)
 
-# # testing only!
+# # for tests
 # solve_ik(106.066, 106.066, 130)

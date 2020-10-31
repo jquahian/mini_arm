@@ -80,22 +80,3 @@ def calculate_motor_turns(gear_ratio, input_degrees):
 	# calculates the number of motor turns to get to degrees based on gear ratio
 	required_turns = (input_degrees * gear_ratio)/360
 	return required_turns
-
-def move_to_point(j1_theta, j2_theta, j3_theta, x, y, z):
-	global is_connected
- 
-	if is_connected == False:
-		print('arm not connected')
-		return
-    
-	# move joint 1
-	move_axis_absolute(oboard[0], 0, 5, j1_theta)
-
-	# move joint 2
-	move_axis_absolute(oboard[0], 1, 5, j2_theta)
-
-	# move joint 3
-	move_axis_absolute(oboard[1], 0, -5, j3_theta)
-
-	print(
-		f'for coordinates x: {x}, y: {y}, z: {y}, joint 1 angle: {j1_theta} joint 2 angle: {j2_theta} degrees, joint 3 angle: {j3_theta} degrees') 

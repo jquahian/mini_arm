@@ -23,6 +23,7 @@ layout = [[sg.Button('Connect')],
           [sg.Text('Y:'), sg.Input(point_coordinates[1])],
           [sg.Text('Z:'), sg.Input(point_coordinates[2])], 
           [sg.Button('Go')],
+          [sg.Output(size=(100,15), key='OUTPUT')],
           [sg.Button('Exit')]]
 
 window = sg.Window('Arm Control', layout)

@@ -24,35 +24,29 @@ def single_angle_limit_check(joint_num, angle):
     
     if joint_num == 1:
         if angle > j1_theta_max or angle < j1_theta_min:
-            print('joint angle 1 out of range')
-            return
+            error_string = 'joint angle 1 out of range'
         else:
-            print(f'moving joint 1 to {angle}')
             move_axis_absolute(0, 0, 5, angle)
 
     if joint_num == 2:
         if angle > j2_theta_max or angle < j2_theta_min:
-            print('joint angle 2 out of range')
-            return
+            error_string = 'joint angle 2 out of range'
         else:
-            print(f'moving joint 2 to {angle}')
             move_axis_absolute(0, 1, 5, angle)
         
     if joint_num == 3:
         if angle > j3_theta_max or angle < j3_theta_min:
-            print('joint angle 3 out of range')
-            return
+            error_string = 'joint angle 3 out of range'
         else:
-            print(f'moving joint 3 to {angle}')
             move_axis_absolute(1, 0, -5, angle)
 
     if joint_num == 4:
         if angle > j4_theta_max or angle < j4_theta_min:
-            print('joint angle 4 out of range')
-            return
+            error_string = 'joint angle 4 out of range'
         else:
-            print(f'moving joint 4 to {angle}')
             move_axis_absolute(1, 1, 1, angle)
+        
+    print(error_string)
 
 def multi_angle_limit_check(angles):
     joint_1_theta = float(angles[0])
@@ -65,7 +59,7 @@ def multi_angle_limit_check(angles):
     or joint_2_theta > j2_theta_max or joint_2_theta < j2_theta_min \
         or joint_3_theta > j3_theta_max or joint_3_theta < j3_theta_min \
             or joint_4_theta > j4_theta_max or joint_4_theta < j4_theta_min:
-                print('Invalid solution angles')
+                print('Coordinate is reachable, but not within joint angle limits')
                 return
     else:
         move_axis_absolute(0, 0, 5, joint_1_theta)
@@ -73,7 +67,7 @@ def multi_angle_limit_check(angles):
         move_axis_absolute(1, 0, -5, joint_3_theta)
         move_axis_absolute(1, 1, 1, joint_4_theta)
         
-        print('Solution valid')
+        print('Valid solution angles')
 
 
 def coordinate_limit_check(x, y, z):

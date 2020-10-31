@@ -2,9 +2,9 @@ import math
 import limit_set as limit
 
 # fixed joint lengths
-j1_j2_length = 100
-j2_j3_length = 100
-j3_j4_length = 100
+j1_j2_length = 231.50
+j2_j3_length = 77.279
+j3_j4_length = 94.055
 
 def solve_ik(x, y, z):
     # projection of arm on xy plane
@@ -35,8 +35,12 @@ def solve_ik(x, y, z):
     # find rotation of joint 2 -- relative to the horizontal axis
     j2_theta = round(math.degrees(phi_2 + phi_1 + math.radians(90)), 3)
 
-    # need to correct which co-angle is chosen for each motor depending on motor configuration
-    j1_theta_motor = round(90 - j1_theta, 3)
+    # need to correct which co-angle is chosen for each motor depending on motor configuration and ensure correct rotation direction
+    if y < 0:
+        j1_theta_motor = -(round(90 - j1_theta, 3))
+    else:
+        j1_theta_motor = (round(90 - j1_theta, 3))
+    
     j2_theta_motor = round(180 - j2_theta, 3)
     j3_theta_motor = round(j3_theta, 3)
     

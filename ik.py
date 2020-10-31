@@ -6,6 +6,7 @@ j1_j2_length = 231.50
 j2_j3_length = 77.279
 j3_j4_length = 94.055
 
+# has a div by zero error when entering xyz : 00z.  Needs exception for these coords
 def solve_ik(x, y, z):
     # projection of arm on xy plane
     xy_projection_length = math.sqrt(pow(x, 2) + pow(y, 2))

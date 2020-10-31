@@ -27,24 +27,28 @@ def single_angle_limit_check(joint_num, angle):
             error_string = 'joint angle 1 out of range'
         else:
             move_axis_absolute(0, 0, 5, angle)
+            return
 
     if joint_num == 2:
         if angle > j2_theta_max or angle < j2_theta_min:
             error_string = 'joint angle 2 out of range'
         else:
             move_axis_absolute(0, 1, 5, angle)
+            return
         
     if joint_num == 3:
         if angle > j3_theta_max or angle < j3_theta_min:
             error_string = 'joint angle 3 out of range'
         else:
             move_axis_absolute(1, 0, -5, angle)
+            return
 
     if joint_num == 4:
         if angle > j4_theta_max or angle < j4_theta_min:
             error_string = 'joint angle 4 out of range'
         else:
             move_axis_absolute(1, 1, 1, angle)
+            return
         
     print(error_string)
 

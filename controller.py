@@ -51,7 +51,7 @@ def calibrate_all():
 
 	print('Joint calibration complete!')
 
-def move_axis_absolute(drive_num, axis_num, axis_gear_ratio, degrees):
+def move_axis(drive_num, axis_num, axis_gear_ratio, degrees, is_absolute):
 	global oboard
 	global is_connected
  
@@ -60,14 +60,49 @@ def move_axis_absolute(drive_num, axis_num, axis_gear_ratio, degrees):
 		return
 
 	degrees = float(degrees)
- 
-	if axis_num == 0:
-		oboard[drive_num].axis0.controller.input_pos = calculate_motor_turns(
-			axis_gear_ratio, degrees)
-	elif axis_num == 1:
-		oboard[drive_num].axis1.controller.input_pos = calculate_motor_turns(
-			axis_gear_ratio, degrees)
+	
+	if is_absolute:
+		if axis_num == 0:
+			oboard[drive_num].axis0.controller.input_pos = calculate_motor_turns(
+				axis_gear_ratio, degrees)
+		elif axis_num == 1:
+			oboard[drive_num].axis1.controller.input_pos = calculate_motor_turns(
+				axis_gear_ratio, degrees)
+	elif is_absolute == False:
+		if axis_num == 0:
+			oboard[drive_num].axis0.controller.move_incremental(calculate_motor_turns(
+				axis_gear_ratio, degrees), from_goal_point=False)
+		elif axis_num == 1:
+			oboard[drive_num].axis1.controller.move_incremental(calculate_motor_turns(
+				axis_gear_ratio, degrees), from_goal_point=False)
 
+	joint_num = return_joint_numer(drive_num, axis_num)
+	
+	print(f'Moving {joint_num} to {degrees} degrees')
+
+def calculate_motor_turns(axis_gear_ratio, input_degrees):
+	# calculates the number of motor turns to get to degrees based on gear ratio
+	required_turns = (input_degrees * axis_gear_ratio)/360
+	return required_turns
+
+# returns the current angle of requested joint
+def return_joint_degrees(drive_num, axis_num, axis_gear_ratio):
+	global oboard
+	global is_connected
+
+	if is_connected == False:
+		print('Arm not connected')
+		return 0
+
+	if axis_num == 0:
+		joint_angle = (oboard[drive_num].axis0.controller.input_pos * 360 * axis_gear_ratio)
+	elif axis_num == 1:
+		joint_angle = (oboard[drive_num].axis0.controller.input_pos * 360 * axis_gear_ratio)
+
+	return joint_angle
+
+# returns a joint number for human feedback
+def return_joint_numer(drive_num, axis_num):
 	if drive_num == 0 and axis_num == 0:
 		joint_num = 1
 	elif drive_num == 0 and axis_num == 1:
@@ -76,10 +111,5 @@ def move_axis_absolute(drive_num, axis_num, axis_gear_ratio, degrees):
 		joint_num = 3
 	elif drive_num == 1 and axis_num == 1:
 		joint_num = 4
-
-	print(f'Moving joint {joint_num} to {degrees}')
-
-def calculate_motor_turns(gear_ratio, input_degrees):
-	# calculates the number of motor turns to get to degrees based on gear ratio
-	required_turns = (input_degrees * gear_ratio)/360
-	return required_turns
+  
+	return joint_num

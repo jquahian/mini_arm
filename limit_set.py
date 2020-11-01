@@ -1,7 +1,6 @@
 import math
 import ik
-from controller import move_axis_absolute
-
+from controller import move_axis, return_joint_degrees, return_joint_numer
 origin_x = 0
 origin_y = 0
 origin_z = ik.j1_j2_length
@@ -18,45 +17,43 @@ j3_theta_max = 90
 j4_theta_min = -360
 j4_theta_max = 360
 
-def single_angle_limit_check(joint_num, angle):
-    joint_num = float(joint_num)
-    angle = float(angle)
+def single_angle_limit_check(drive_num, axis_num, gear_ratio, angle, is_absolute):
+    joint_num = return_joint_numer(drive_num, axis_num)
+    
+    # determine if we want to move the arm relative to current position or to an absolute position
+    if is_absolute == False:
+        angle_check = return_joint_degrees(drive_num, axis_num, gear_ratio) + angle
+    else:
+        angle_check = angle
     
     if joint_num == 1:
-        if angle > j1_theta_max or angle < j1_theta_min:
+        if angle_check > j1_theta_max or angle_check < j1_theta_min:
             error_string = 'joint angle 1 out of range'
-        else:
-            move_axis_absolute(0, 0, 5, angle)
+            print(error_string)
             return
-
-    if joint_num == 2:
-        if angle > j2_theta_max or angle < j2_theta_min:
+    elif joint_num == 2:
+        if angle_check > j2_theta_max or angle_check < j2_theta_min:
             error_string = 'joint angle 2 out of range'
-        else:
-            move_axis_absolute(0, 1, 5, angle)
+            print(error_string)
             return
-        
-    if joint_num == 3:
-        if angle > j3_theta_max or angle < j3_theta_min:
+    elif joint_num == 3:
+        if angle_check > j3_theta_max or angle_check < j3_theta_min:
             error_string = 'joint angle 3 out of range'
-        else:
-            move_axis_absolute(1, 0, -5, angle)
+            print(error_string)
             return
-
-    if joint_num == 4:
-        if angle > j4_theta_max or angle < j4_theta_min:
+    elif joint_num == 4:
+        if angle_check > j4_theta_max or angle_check < j4_theta_min:
             error_string = 'joint angle 4 out of range'
-        else:
-            move_axis_absolute(1, 1, 1, angle)
+            print(error_string)
             return
-        
-    print(error_string)
+    
+    move_axis(drive_num, axis_num, gear_ratio, angle, is_absolute)
 
 def multi_angle_limit_check(angles):
-    joint_1_theta = float(angles[0])
-    joint_2_theta = float(angles[1])
-    joint_3_theta = float(angles[2])
-    joint_4_theta = float(angles[3])
+    joint_1_theta = angles[0]
+    joint_2_theta = angles[1]
+    joint_3_theta = angles[2]
+    joint_4_theta = angles[3]
 
     # wow this is ugly...
     if joint_1_theta > j1_theta_max or joint_1_theta < j1_theta_min \
@@ -66,19 +63,15 @@ def multi_angle_limit_check(angles):
                 print('Coordinate is reachable, but not within joint angle limits')
                 return
     else:
-        move_axis_absolute(0, 0, 5, joint_1_theta)
-        move_axis_absolute(0, 1, 5, joint_2_theta)
-        move_axis_absolute(1, 0, -5, joint_3_theta)
-        move_axis_absolute(1, 1, 1, joint_4_theta)
+        move_axis(0, 0, 5, joint_1_theta, True)
+        move_axis(0, 1, 5, joint_2_theta, True)
+        move_axis(1, 0, -5, joint_3_theta, True)
+        move_axis(1, 1, 1, joint_4_theta, True)
         
         print('Valid solution angles')
 
 
-def coordinate_limit_check(x, y, z):
-    x = float(x)
-    y = float(y)
-    z = float(z)
-    
+def coordinate_limit_check(x, y, z):    
     dist_to_point = math.sqrt(pow(x - origin_x, 2) + pow(y - origin_y, 2) + pow(z - origin_z, 2))
     
     # only accept positive x-coordinates and z not less than distance from j1 to j2

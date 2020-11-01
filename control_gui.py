@@ -16,15 +16,39 @@ point_coordinates = [0, 0, 0]
 layout = [[sg.Button('Connect')],
           [sg.Button('Calibrate All'), sg.Button('Home All')],
           [sg.Text('Manual Joint Control')],
-          [sg.Text('J1 Angle: '), sg.Input(joint_angles[0]), sg.Button('Set J1')],
-          [sg.Text('J2 Angle: '), sg.Input(joint_angles[1]), sg.Button('Set J2')],
-          [sg.Text('J3 Angle: '), sg.Input(joint_angles[2]), sg.Button('Set J3')],
-          [sg.Text('J4 Angle: '), sg.Input(joint_angles[3]), sg.Button('Set J4')],
+          [sg.Text('J1 Angle: '), 
+           sg.Input('0', size=(10, 10), justification='center'),
+           sg.Button('Set J1'), 
+           sg.Text('Relative: '), 
+           sg.Input('10', size=(5,10), justification='center'), 
+           sg.Button('-J1'), 
+           sg.Button('+J1')],
+          [sg.Text('J2 Angle: '), 
+           sg.Input('0', size=(10, 10), justification='center'), 
+           sg.Button('Set J2'), 
+           sg.Text('Relative: '), 
+           sg.Input('10', size=(5,10), justification='center'),
+           sg.Button('-J2'), 
+           sg.Button('+J2')],
+          [sg.Text('J3 Angle: '), 
+           sg.Input('0', size=(10, 10), justification='center'), 
+           sg.Button('Set J3'), 
+           sg.Text('Relative: '), 
+           sg.Input('10', size=(5,10), justification='center'),
+           sg.Button('-J3'), 
+           sg.Button('+J3')],
+          [sg.Text('J4 Angle: '), 
+           sg.Input('0', size=(10, 10), justification='center'), 
+           sg.Button('Set J4'), 
+           sg.Text('Relative: '), 
+           sg.Input('10', size=(5,10), justification='center'),
+           sg.Button('-J4'), 
+           sg.Button('+J4')],
           [sg.Button('Set All')],
           [sg.Text('Move to Point')],
-          [sg.Text('x - Coordinate: '), sg.Input('0')],
-          [sg.Text('y - Coordinate: '), sg.Input('0')],
-          [sg.Text('z - Coordinate: '), sg.Input('0')],
+          [sg.Text('x - Coordinate: '), sg.Input('0', size=(10, 10), justification='center')],
+          [sg.Text('y - Coordinate: '), sg.Input('0', size=(10, 10), justification='center')],
+          [sg.Text('z - Coordinate: '), sg.Input('0', size=(10, 10), justification='center')],
           [sg.Button('Go')],
           [sg.Text('Output')],
           [sg.Output(size=(65, 15), key='OUTPUT')],
@@ -43,29 +67,59 @@ while True:
     if event == 'Calibrate All':
         controller.calibrate_all()
         
-        # # move joints to initial known positions
+        # move joints to initial pose
         limit.multi_angle_limit_check(joint_angles)
+        for i in range(len(joint_angles)):
+            values[i] = joint_angles[i]
 
     if event == 'Home All':
+        
+        # moves arm back to zero pose
         limit.multi_angle_limit_check(home_angles)
+        for i in range(len(home_angles)):
+            values[i] = home_angles[i]
 
     if event == 'Go':
-        limit.coordinate_limit_check(values[4], values[5], values[6])
+        limit.coordinate_limit_check(float(values[8]), float(values[9]), float(values[10]))
         
     if event == 'Set J1':
-        limit.single_angle_limit_check(1, values[0])
+        limit.single_angle_limit_check(0, 0, 5, float(values[0]), True)
         
     if event == 'Set J2':
-        limit.single_angle_limit_check(2, values[1])
+        limit.single_angle_limit_check(0, 1, 5, float(values[2]), True)
         
     if event == 'Set J3':
-        limit.single_angle_limit_check(3, values[2])
+        limit.single_angle_limit_check(1, 0, -5, float(values[4]), True)
 
     if event == 'Set J4':
-        limit.single_angle_limit_check(4, values[3])
+        limit.single_angle_limit_check(1, 1, 1, float(values[6]), True)
+        
+    if event == '-J1':
+        limit.single_angle_limit_check(0, 0, 5, -float(values[1]), False)
+    
+    if event == '+J1':
+        limit.single_angle_limit_check(0, 0, 5, float(values[1]), False)
+    
+    if event == '-J2':
+        limit.single_angle_limit_check(0, 1, 5, -float(values[3]), False)
+
+    if event == '+J2':
+        limit.single_angle_limit_check(0, 1, 5, float(values[3]), False)
+
+    if event == '-J3':
+        limit.single_angle_limit_check(1, 0, -5, -float(values[5]), False)
+
+    if event == '+J3':
+        limit.single_angle_limit_check(1, 0, -5, float(values[5]), False)
+
+    if event == '-J4':
+        limit.single_angle_limit_check(1, 1, 1, -float(values[7]), False)
+
+    if event == '+J4':
+        limit.single_angle_limit_check(1, 1, 1, +float(values[7]), False)
 
     if event == 'Set All':
         limit.multi_angle_limit_check(
-            [values[0], values[1], values[2], values[3]])
+            [float(values[0]), float(values[2]), float(values[4]), float(values[6])])
 
 window.close()

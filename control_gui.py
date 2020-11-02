@@ -116,7 +116,7 @@ while True:
         limit.single_angle_limit_check(1, 1, 1, -float(values[7]), False)
 
     if event == '+J4':
-        limit.single_angle_limit_check(1, 1, 1, +float(values[7]), False)
+        limit.single_angle_limit_check(1, 1, 1, float(values[7]), False)
 
     if event == 'Set All':
         limit.multi_angle_limit_check(

@@ -71,14 +71,19 @@ def move_axis(drive_num, axis_num, axis_gear_ratio, degrees, is_absolute):
 	elif is_absolute == False:
 		if axis_num == 0:
 			oboard[drive_num].axis0.controller.move_incremental(calculate_motor_turns(
-				axis_gear_ratio, degrees), from_goal_point=False)
+				axis_gear_ratio, degrees), False)
 		elif axis_num == 1:
 			oboard[drive_num].axis1.controller.move_incremental(calculate_motor_turns(
-				axis_gear_ratio, degrees), from_goal_point=False)
+				axis_gear_ratio, degrees), False)
 
 	joint_num = return_joint_numer(drive_num, axis_num)
-	
-	print(f'Moving {joint_num} to {degrees} degrees')
+	new_joint_angle = round(return_joint_degrees(drive_num, axis_num, axis_gear_ratio), 3)
+
+	if is_absolute:
+		print(f'Moving {joint_num} to {new_joint_angle} degrees')
+	else:
+
+		print(f'Moving {joint_num} by {degrees} degrees.  Current angle of {joint_num} is now: {new_joint_angle} degrees')		
 
 def calculate_motor_turns(axis_gear_ratio, input_degrees):
 	# calculates the number of motor turns to get to degrees based on gear ratio
@@ -95,9 +100,9 @@ def return_joint_degrees(drive_num, axis_num, axis_gear_ratio):
 		return 0
 
 	if axis_num == 0:
-		joint_angle = (oboard[drive_num].axis0.controller.input_pos * 360 * axis_gear_ratio)
+		joint_angle = (oboard[drive_num].axis0.controller.input_pos * 360 / axis_gear_ratio)
 	elif axis_num == 1:
-		joint_angle = (oboard[drive_num].axis0.controller.input_pos * 360 * axis_gear_ratio)
+		joint_angle = (oboard[drive_num].axis1.controller.input_pos * 360 / axis_gear_ratio)
 
 	return joint_angle
 

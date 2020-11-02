@@ -34,7 +34,7 @@ def single_angle_limit_check(drive_num, axis_num, gear_ratio, angle, is_absolute
     elif joint_num == 2:
         if angle_check > j2_theta_max or angle_check < j2_theta_min:
             error_string = 'joint angle 2 out of range'
-            print(error_string)
+            print(angle_check)
             return
     elif joint_num == 3:
         if angle_check > j3_theta_max or angle_check < j3_theta_min:

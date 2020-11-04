@@ -5,7 +5,7 @@ import limit_set as limit
 sg.theme('DarkAmber')
 
 # initial state of joint angles
-joint_angles = [0, 50, 50, 0]
+joint_angles = [0, 50, 50, -360]
 
 # zero'd position
 home_angles = [0, 0, 0, 0]

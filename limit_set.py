@@ -14,8 +14,8 @@ j2_theta_max = 90
 j3_theta_min = -90
 j3_theta_max = 90
 
-j4_theta_min = -360
-j4_theta_max = 360
+j4_theta_min = -530
+j4_theta_max = 0
 
 def single_angle_limit_check(drive_num, axis_num, gear_ratio, angle, is_absolute):
     joint_num = return_joint_numer(drive_num, axis_num)
@@ -53,20 +53,17 @@ def multi_angle_limit_check(angles):
     joint_1_theta = angles[0]
     joint_2_theta = angles[1]
     joint_3_theta = angles[2]
-    joint_4_theta = angles[3]
 
     # wow this is ugly...
     if joint_1_theta > j1_theta_max or joint_1_theta < j1_theta_min \
     or joint_2_theta > j2_theta_max or joint_2_theta < j2_theta_min \
-        or joint_3_theta > j3_theta_max or joint_3_theta < j3_theta_min \
-            or joint_4_theta > j4_theta_max or joint_4_theta < j4_theta_min:
-                print('Coordinate is reachable, but not within joint angle limits')
-                return
+        or joint_3_theta > j3_theta_max or joint_3_theta < j3_theta_min:
+            print('Coordinate is reachable, but not within joint angle limits')
+            return
     else:
         move_axis(0, 0, 5, joint_1_theta, True)
         move_axis(0, 1, 5, joint_2_theta, True)
         move_axis(1, 0, -5, joint_3_theta, True)
-        move_axis(1, 1, 1, joint_4_theta, True)
         
         print('Valid solution angles')
 

@@ -7,7 +7,7 @@ j2_j3_length = 77.279
 j3_j4_length = 94.055
 
 # has a div by zero error when entering xyz : 00z.  Needs exception for these coords
-def solve_ik(x, y, z):
+def solve_ik(x, y, z, joint_4):
     # projection of arm on xy plane
     xy_projection_length = math.sqrt(pow(x, 2) + pow(y, 2))
     
@@ -45,15 +45,21 @@ def solve_ik(x, y, z):
     j2_theta_motor = round(180 - j2_theta, 3)
     j3_theta_motor = round(j3_theta, 3)
     
+    # joint 4 (end effector) is independent from the IK solve, but must be passed in to check for limits
+    joint_4_motor_theta = round(joint_4, 3)
+    
     print(
         f'joint 1 target angle: {j1_theta} -- value to be passsed to motor is {j1_theta_motor}')
     print(
         f'joint 2 target angle: {j2_theta} -- value to be passsed to motor is {j2_theta_motor}')
     print(
         f'joint 3 target angle: {j3_theta} -- value to be passsed to motor is {j3_theta_motor}')
+    print(
+        f'joint 4 moving to {joint_4_motor_theta}')
     
     # angle checks
-    limit.multi_angle_limit_check([j1_theta_motor, j2_theta_motor, j3_theta_motor, 0])
+    limit.multi_angle_limit_check(
+        [j1_theta_motor, j2_theta_motor, j3_theta_motor, joint_4_motor_theta])
     
     return (j1_theta_motor, j2_theta_motor, j3_theta_motor, x, y, z)
 

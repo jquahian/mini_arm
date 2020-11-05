@@ -53,22 +53,25 @@ def multi_angle_limit_check(angles):
     joint_1_theta = angles[0]
     joint_2_theta = angles[1]
     joint_3_theta = angles[2]
-
+    joint_4_theta = angles[3]
+    
     # wow this is ugly...
     if joint_1_theta > j1_theta_max or joint_1_theta < j1_theta_min \
     or joint_2_theta > j2_theta_max or joint_2_theta < j2_theta_min \
-        or joint_3_theta > j3_theta_max or joint_3_theta < j3_theta_min:
-            print('Coordinate is reachable, but not within joint angle limits')
-            return
+        or joint_3_theta > j3_theta_max or joint_3_theta < j3_theta_min \
+            or joint_4_theta > j4_theta_max or joint_4_theta < j4_theta_min:
+                print('Coordinate is reachable, but not within joint angle limits')
+                return
     else:
         move_axis(0, 0, 5, joint_1_theta, True)
         move_axis(0, 1, 5, joint_2_theta, True)
         move_axis(1, 0, -5, joint_3_theta, True)
+        move_axis(1, 1, 1, joint_4_theta, True)
         
         print('Valid solution angles')
 
 
-def coordinate_limit_check(x, y, z):    
+def coordinate_limit_check(x, y, z, joint_4):    
     dist_to_point = math.sqrt(pow(x - origin_x, 2) + pow(y - origin_y, 2) + pow(z - origin_z, 2))
     
     # only accept positive x-coordinates and z not less than distance from j1 to j2
@@ -81,4 +84,4 @@ def coordinate_limit_check(x, y, z):
         print(f'coordinates of {x, y, z} are outside of work volume {dist_to_point}')    
         return
     
-    ik.solve_ik(x, y, z)
+    ik.solve_ik(x, y, z, joint_4)

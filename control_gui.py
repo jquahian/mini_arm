@@ -7,8 +7,11 @@ sg.theme('DarkAmber')
 # initial state of joint angles
 joint_angles = [0, 50, 50, -360]
 
-# zero'd position
+# zero'd position for joints 1, 2, 3, 4
 home_angles = [0, 0, 0, 0]
+
+# joint 4 zero position: want the option to control this independently of other joints
+j4_angle = 0
 
 # position of joint 4 in xyz space
 point_coordinates = [0, 0, 0]
@@ -49,6 +52,7 @@ layout = [[sg.Button('Connect')],
           [sg.Text('x - Coordinate: '), sg.Input('0', size=(10, 10), justification='center')],
           [sg.Text('y - Coordinate: '), sg.Input('0', size=(10, 10), justification='center')],
           [sg.Text('z - Coordinate: '), sg.Input('0', size=(10, 10), justification='center')],
+          [sg.Text('End-effector   : '), sg.Input('0', size=(10, 10), justification='center')],
           [sg.Button('Go')],
           [sg.Text('Output')],
           [sg.Output(size=(65, 15), key='OUTPUT')],
@@ -80,7 +84,7 @@ while True:
             values[i] = home_angles[i]
 
     if event == 'Go':
-        limit.coordinate_limit_check(float(values[8]), float(values[9]), float(values[10]))
+        limit.coordinate_limit_check(float(values[8]), float(values[9]), float(values[10]), float(values[11]))
         
     if event == 'Set J1':
         limit.single_angle_limit_check(0, 0, 5, float(values[0]), True)

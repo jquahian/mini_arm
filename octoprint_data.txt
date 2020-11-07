@@ -1,1 +1,0 @@
-{"prusa_1": [{"printer_address": "test"}]}

@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 import controller
 import limit_set as limit
+import octoprint_listener as listener
 
 sg.theme('DarkAmber')
 
@@ -56,6 +57,7 @@ layout = [[sg.Button('Connect')],
           [sg.Button('Go')],
           [sg.Text('Output')],
           [sg.Output(size=(65, 15), key='OUTPUT')],
+          [sg.Button('Connect to Prusa 1')]
           [sg.Button('Exit')]]
 
 window = sg.Window('Arm Control', layout)
@@ -125,5 +127,8 @@ while True:
     if event == 'Set All':
         limit.multi_angle_limit_check(
             [float(values[0]), float(values[2]), float(values[4]), float(values[6])])
+    
+    if event == 'Connect to Prusa 1':
+        listener.start_listener()        
 
 window.close()

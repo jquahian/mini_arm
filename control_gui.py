@@ -2,11 +2,12 @@ import PySimpleGUI as sg
 import controller
 import limit_set as limit
 import octoprint_listener as listener
+import json
 
 sg.theme('DarkAmber')
 
 # initial state of joint angles
-joint_angles = [0, 50, 50, -360]
+joint_angles = [0, -35, 35, 0]
 
 # zero'd position for joints 1, 2, 3, 4
 home_angles = [0, 0, 0, 0]
@@ -16,6 +17,15 @@ j4_angle = 0
 
 # position of joint 4 in xyz space
 point_coordinates = [0, 0, 0]
+
+prusa_1_connected = False
+
+def connect_prusa_1():
+    with open('octoprint_data.txt') as json_file:
+        data = json.load(json_file)
+        prusa_1_data = (data['prusa_1'][0]['printer_address'])
+
+    listener.get_printer_info(prusa_1_data)
 
 layout = [[sg.Button('Connect')],
           [sg.Button('Calibrate All'), sg.Button('Home All')],
@@ -56,14 +66,19 @@ layout = [[sg.Button('Connect')],
           [sg.Text('End-effector   : '), sg.Input('0', size=(10, 10), justification='center')],
           [sg.Button('Go')],
           [sg.Text('Output')],
-          [sg.Output(size=(65, 15), key='OUTPUT')],
-          [sg.Button('Connect to Prusa 1')],
+          [sg.Output(size=(65,15), key='OUTPUT')],
+          [sg.Button('Connect to Prusa 1', key='-CONNECT_P1-DISCONNECT_P1-')],
           [sg.Button('Exit')]]
 
 window = sg.Window('Arm Control', layout)
 
 while True:
-    event, values = window.read()
+    if prusa_1_connected == True:
+        event, values = window.read(timeout=15000)
+        connect_prusa_1()
+    else:
+        event, values = window.read()
+
     if event == sg.WIN_CLOSED or event == 'Exit':
         break
     
@@ -128,7 +143,12 @@ while True:
         limit.multi_angle_limit_check(
             [float(values[0]), float(values[2]), float(values[4]), float(values[6])])
     
-    if event == 'Connect to Prusa 1':
-        listener.start_listener()        
+    if event == '-CONNECT_P1-DISCONNECT_P1-':
+        if not prusa_1_connected:            
+            prusa_1_connected = True
+        else:
+            prusa_1_connected = False
+
+        window['-CONNECT_P1-DISCONNECT_P1-'].Update('Disconnect Prusa 1' if prusa_1_connected else 'Connect Prusa 1')
 
 window.close()

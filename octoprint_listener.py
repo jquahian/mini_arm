@@ -40,31 +40,20 @@ def get_printer_info(ip_address):
         
     if harvest_ready:
         if p1_bed_temp < 30 and p1_is_printing == False and p1_is_operational:
-                harvest_prints()
-                harvest_ready == False
+            harvest_prints()
+            harvest_ready = False
     else:
         print('Nothing to harvest')
 
-    print(f'Prusa 1 operational status: {p1_is_operational}')
+    print(f'Prusa 1 operational: {p1_is_operational}')
     print(f'Prusa 1 Nozzle Temp: {p1_t0_temp}')
     print(f'Prusa 1 Bed Temp: {p1_bed_temp}')
-    print(f'Prusa 1 printing status: {p1_is_ready}')
-    print(f'Prusa 1 operational status: {p1_is_printing}')
+    print(f'Prusa 1 ready: {p1_is_ready}')
+    print(f'Prusa 1 printing: {p1_is_printing}')
+    print('\n')
     
 # should this be here?    
 def harvest_prints():
     # test coords to 'pickup' print
     limit.multi_angle_limit_check([0, 40, 50, -250])
     print('Prusa 1 harvested!')
-
-def start_listener(is_connected):
-    with open('octoprint_data.txt') as json_file:
-        data = json.load(json_file)
-        prusa_1_data = (data['prusa_1'][0]['printer_address'])
-
-    while is_connected:
-        print('Connected to Prusa 1')
-        get_printer_info(prusa_1_data)
-        time.sleep(60)
-    else:
-        print('Disconnected from Prusa 1')

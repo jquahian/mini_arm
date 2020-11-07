@@ -57,7 +57,7 @@ layout = [[sg.Button('Connect')],
           [sg.Button('Go')],
           [sg.Text('Output')],
           [sg.Output(size=(65, 15), key='OUTPUT')],
-          [sg.Button('Connect to Prusa 1')]
+          [sg.Button('Connect to Prusa 1')],
           [sg.Button('Exit')]]
 
 window = sg.Window('Arm Control', layout)

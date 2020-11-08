@@ -13,6 +13,7 @@ TODOS
 - decide where harvest_prints should go??
 '''
 
+# polls the requested printed via octoprint API
 def get_printer_info(ip_address):
     global p1_ready_status
     global harvest_ready
@@ -26,6 +27,10 @@ def get_printer_info(ip_address):
     p1_t0_temp = info['temperature']['tool0']['actual']
     p1_bed_temp = info['temperature']['bed']['actual']
     
+    # to determine if we are to get the print or not, we need to see what state change the printer is in
+    # if we have just connected to the printer and we don't know the past/future state, we initialize an emtpy list
+    # the first and second ping to octoprint will return the ready status of the printer
+    # if first entry in status goes from ready to not ready (which is printing), then when the status changes we get the print
     if len(p1_ready_status) < 2:
         p1_ready_status.append(p1_is_ready)
     else:
@@ -35,9 +40,11 @@ def get_printer_info(ip_address):
         if p1_ready_status[0] == True and p1_ready_status[1] == False:
             print("PREPARING FOR THE HARVEST")
 
+        # 'ready' status changed (printing -> not printing) get ready to pick the print
         if p1_ready_status[0] == False and p1_ready_status[1] == True:
             harvest_ready = True
-        
+    
+    # when bed temp is < 45 and other safety checks, we move to get the print
     if harvest_ready:
         if p1_bed_temp < 45 and p1_is_printing == False and p1_is_operational:
             harvest_prints()
@@ -45,6 +52,7 @@ def get_printer_info(ip_address):
     else:
         print('Nothing to harvest')
 
+    # some status outpus
     print(f'Prusa 1 operational: {p1_is_operational}')
     print(f'Prusa 1 Nozzle Temp: {p1_t0_temp}')
     print(f'Prusa 1 Bed Temp: {p1_bed_temp}')

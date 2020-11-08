@@ -18,8 +18,10 @@ j4_angle = 0
 # position of joint 4 in xyz space
 point_coordinates = [0, 0, 0]
 
+# initial status of connection to first printer
 prusa_1_connected = False
 
+# pass in the ip + api key in external json file to octoprint
 def connect_prusa_1():
     with open('octoprint_data.txt') as json_file:
         data = json.load(json_file)
@@ -73,6 +75,7 @@ layout = [[sg.Button('Connect')],
 window = sg.Window('Arm Control', layout)
 
 while True:
+    # if connected to the printer, ping the printer for status every 15 s
     if prusa_1_connected == True:
         event, values = window.read(timeout=15000)
         connect_prusa_1()

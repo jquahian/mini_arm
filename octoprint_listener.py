@@ -1,22 +1,23 @@
 import requests
 import json
 import time
-import limit_set as limit
+# import limit_set as limit
 
 p1_ready_status = []
 harvest_ready = False
+move_arm_to_pos = False
 
 '''
 TODOS
 - check if not on same network
 - check to see if event was a print cancel
-- decide where harvest_prints should go??
 '''
 
 # polls the requested printed via octoprint API
 def get_printer_info(ip_address):
     global p1_ready_status
     global harvest_ready
+    global move_arm_to_pos
     
     r = requests.get(ip_address, timeout=5)
     info = r.json()
@@ -43,12 +44,13 @@ def get_printer_info(ip_address):
         # 'ready' status changed (printing -> not printing) get ready to pick the print
         if p1_ready_status[0] == False and p1_ready_status[1] == True:
             harvest_ready = True
-    
+
     # when bed temp is < 45 and other safety checks, we move to get the print
     if harvest_ready:
         if p1_bed_temp < 45 and p1_is_printing == False and p1_is_operational:
-            harvest_prints()
             harvest_ready = False
+            move_arm_to_pos = True
+            return move_arm_to_pos
     else:
         print('Nothing to harvest')
 
@@ -59,9 +61,9 @@ def get_printer_info(ip_address):
     print(f'Prusa 1 ready: {p1_is_ready}')
     print(f'Prusa 1 printing: {p1_is_printing}')
     print('\n')
-    
-# should this be here?    
-def harvest_prints():
-    # test coords to 'pickup' print
-    limit.multi_angle_limit_check([0, 40, 50, -250])
-    print('Prusa 1 harvested!')
+
+# # should this be here?    
+# def harvest_prints():
+#     # test coords to 'pickup' print
+#     limit.multi_angle_limit_check([0, 40, 50, -250])
+#     print('Prusa 1 harvested!')

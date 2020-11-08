@@ -106,6 +106,23 @@ def return_joint_degrees(drive_num, axis_num, axis_gear_ratio):
 
 	return joint_angle
 
+def return_encoder_position(drive_num, axis_num, axis_gear_ratio):
+	global oboard
+	global is_connected
+
+	if is_connected == False:
+		print('Arm not connected')
+		return 0
+
+	if axis_num == 0:
+		encoder_position = oboard[drive_num].axis0.encoder.shadow_count
+	elif axis_num == 1:
+		encoder_position = oboard[drive_num].axis1.encoder.shadow_count
+	
+	encoder_position_degrees = encoder_position * 360 / axis_gear_ratio
+	
+	return encoder_position_degrees
+
 # returns a joint number for human feedback
 def return_joint_numer(drive_num, axis_num):
 	if drive_num == 0 and axis_num == 0:

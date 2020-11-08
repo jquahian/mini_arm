@@ -21,13 +21,74 @@ point_coordinates = [0, 0, 0]
 # initial status of connection to first printer
 prusa_1_connected = False
 
+stream_data = False
+
+multi_point_controler = False
+
+timeout = 500
+
+def stream_data_toggle():
+    global stream_data
+
+    if not stream_data:
+        stream_data = True
+    else:
+        stream_data = False
+
 # pass in the ip + api key in external json file to octoprint
 def connect_prusa_1():
+    global timeout
+    
+    if not listener.move_arm_to_pos:   
+        timeout = 15000
+    else:
+        timeout = 500
+    
     with open('octoprint_data.txt') as json_file:
         data = json.load(json_file)
         prusa_1_data = (data['prusa_1'][0]['printer_address'])
 
     listener.get_printer_info(prusa_1_data)
+    
+    if listener.move_arm_to_pos == True:
+        print('BEGINNING THE HARVEST')
+        # test coords to 'pickup' print
+        angle_set_1 = [0, 40, 50, -250]
+        angle_set_2 = [90, 20, 20, 0]
+        multi_point_control(angle_set_1, angle_set_2)
+
+def multi_point_control(angle_set_1, angle_set_2):
+    instruct_num = 0
+
+    position_threshold = 0.90
+    
+    angle_instructions = [angle_set_1, angle_set_2]
+    
+    num_instructions = len(angle_instructions)
+    
+    j1_encoder_pos = controller.return_encoder_position(0, 0, 5)
+    j2_encoder_pos = controller.return_encoder_position(0, 1, 5)
+    j3_encoder_pos = controller.return_encoder_position(1, 0, -5)
+    j4_encoder_pos = controller.return_encoder_position(1, 1, 1)
+    
+    encoder_positions = [j1_encoder_pos, j2_encoder_pos, j3_encoder_pos, j4_encoder_pos]
+    
+    for i in range(len(encoder_positions)):
+        print(f'Joint {encoder_positions[i] + 1} encoder position (angle): {encoder_positions[i]}')
+
+    # 0/1
+    for i in range(len(num_instructions)):
+        # 0/4
+        for j in range(len(angle_instructions[i])):
+            if (encoder_positions[j] / angle_instructions[i][j]) >= position_threshold:
+                limit.multi_angle_limit_check
+                instruct_num += 1
+
+    limit.multi_angle_limit_check(angle_instructions[instruct_num])
+
+    if instruct_num == (len(angle_instructions) - 1):
+        listener.move_arm_to_pos = False
+        print('Prusa 1 harvested!')
 
 layout = [[sg.Button('Connect')],
           [sg.Button('Calibrate All'), sg.Button('Home All')],
@@ -76,9 +137,10 @@ window = sg.Window('Arm Control', layout)
 
 while True:
     # if connected to the printer, ping the printer for status every 15 s
-    if prusa_1_connected == True:
-        event, values = window.read(timeout=15000)
-        connect_prusa_1()
+    if stream_data == True:
+        event, values = window.read(timeout=timeout)
+        if connect_prusa_1:
+            connect_prusa_1()
     else:
         event, values = window.read()
 
@@ -147,6 +209,8 @@ while True:
             [float(values[0]), float(values[2]), float(values[4]), float(values[6])])
     
     if event == '-CONNECT_P1-DISCONNECT_P1-':
+        stream_data_toggle()
+        
         if not prusa_1_connected:            
             prusa_1_connected = True
         else:

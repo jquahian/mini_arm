@@ -47,7 +47,7 @@ def get_printer_info(ip_address):
 
     # when bed temp is < 45 and other safety checks, we move to get the print
     if harvest_ready:
-        if p1_bed_temp < 45 and p1_is_printing == False and p1_is_operational:
+        if p1_bed_temp < 80 and p1_is_printing == False and p1_is_operational:
             harvest_ready = False
             move_arm_to_pos = True
             return move_arm_to_pos

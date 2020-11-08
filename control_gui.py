@@ -23,9 +23,9 @@ prusa_1_connected = False
 
 stream_data = False
 
-multi_point_controler = False
+timeout = 2500
 
-timeout = 500
+multi_point_instruction_num = 0
 
 def stream_data_toggle():
     global stream_data
@@ -39,11 +39,6 @@ def stream_data_toggle():
 def connect_prusa_1():
     global timeout
     
-    if not listener.move_arm_to_pos:   
-        timeout = 15000
-    else:
-        timeout = 500
-    
     with open('octoprint_data.txt') as json_file:
         data = json.load(json_file)
         prusa_1_data = (data['prusa_1'][0]['printer_address'])
@@ -52,43 +47,45 @@ def connect_prusa_1():
     
     if listener.move_arm_to_pos == True:
         print('BEGINNING THE HARVEST')
+
         # test coords to 'pickup' print
-        angle_set_1 = [0, 40, 50, -250]
-        angle_set_2 = [90, 20, 20, 0]
-        multi_point_control(angle_set_1, angle_set_2)
+        angle_set_1 = [0, 50, 50, 0]
+        angle_set_2 = [0, 40, 50, -310]
+        angle_set_3 = [90, 40, 50, -310]
+        angle_set_4 = [90, 40, 50, 0]
+        angle_set_5 = [0, 0, 0, 0]
 
-def multi_point_control(angle_set_1, angle_set_2):
-    instruct_num = 0
+        multi_point_control(angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5)
 
-    position_threshold = 0.90
-    
-    angle_instructions = [angle_set_1, angle_set_2]
-    
-    num_instructions = len(angle_instructions)
-    
-    j1_encoder_pos = controller.return_encoder_position(0, 0, 5)
-    j2_encoder_pos = controller.return_encoder_position(0, 1, 5)
-    j3_encoder_pos = controller.return_encoder_position(1, 0, -5)
-    j4_encoder_pos = controller.return_encoder_position(1, 1, 1)
-    
-    encoder_positions = [j1_encoder_pos, j2_encoder_pos, j3_encoder_pos, j4_encoder_pos]
-    
-    for i in range(len(encoder_positions)):
-        print(f'Joint {encoder_positions[i] + 1} encoder position (angle): {encoder_positions[i]}')
+# need to convert this to args or load from a preconfigured jsonn file
+def multi_point_control(angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5):
+    global multi_point_instruction_num
 
-    # 0/1
-    for i in range(len(num_instructions)):
-        # 0/4
-        for j in range(len(angle_instructions[i])):
-            if (encoder_positions[j] / angle_instructions[i][j]) >= position_threshold:
-                limit.multi_angle_limit_check
-                instruct_num += 1
+    position_threshold = 3
+    
+    angle_instructions = [angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5]
+    
+    j1_current_vel = controller.return_joint_velocity(0, 0, 5)
+    j2_current_vel = controller.return_joint_velocity(0, 1, 5)
+    j3_current_vel = controller.return_joint_velocity(1, 0, -5)
+    j4_current_vel = controller.return_joint_velocity(1, 1, 1)
+    
+    current_velocities = [j1_current_vel, j2_current_vel, j3_current_vel, j4_current_vel]
+    
+    for i in range(len(current_velocities)):
+        print(f'Joint {i + 1} current velocity (angle): {current_velocities[i]}')
 
-    limit.multi_angle_limit_check(angle_instructions[instruct_num])
+    if j1_current_vel < 0.05 and j2_current_vel < 0.05 and j3_current_vel < 0.05 and j4_current_vel < 0.05:
+        limit.multi_angle_limit_check(angle_instructions[multi_point_instruction_num])
 
-    if instruct_num == (len(angle_instructions) - 1):
-        listener.move_arm_to_pos = False
-        print('Prusa 1 harvested!')
+        if multi_point_instruction_num == (len(angle_instructions) - 1):
+            listener.move_arm_to_pos = False
+            multi_point_instruction_num = 0
+            print('Prusa 1 harvested!')
+        else:
+            multi_point_instruction_num += 1
+    else:
+        print ('arm in motion')
 
 layout = [[sg.Button('Connect')],
           [sg.Button('Calibrate All'), sg.Button('Home All')],

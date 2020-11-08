@@ -50,7 +50,7 @@ def connect_prusa_1():
 
         # test coords to 'pickup' print
         # need better system to program the arm for specific moves
-        angle_set_1 = [0, 50, 50, 0]
+        angle_set_1 = [0, 40, 50, 0]
         angle_set_2 = [0, 40, 50, -310]
         angle_set_3 = [90, 40, 50, -310]
         angle_set_4 = [90, 40, 50, 0]

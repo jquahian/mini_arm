@@ -39,7 +39,7 @@ def get_printer_info(ip_address):
             harvest_ready = True
         
     if harvest_ready:
-        if p1_bed_temp < 30 and p1_is_printing == False and p1_is_operational:
+        if p1_bed_temp < 45 and p1_is_printing == False and p1_is_operational:
             harvest_prints()
             harvest_ready = False
     else:

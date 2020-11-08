@@ -106,7 +106,8 @@ def return_joint_degrees(drive_num, axis_num, axis_gear_ratio):
 
 	return joint_angle
 
-def return_joint_velocity(drive_num, axis_num, axis_gear_ratio):
+# returns the current velocity of the requested joint
+def return_joint_velocity(drive_num, axis_num):
 	global oboard
 	global is_connected
 
@@ -115,11 +116,11 @@ def return_joint_velocity(drive_num, axis_num, axis_gear_ratio):
 		return 0
 
 	if axis_num == 0:
-		encoder_vel_estimate = oboard[drive_num].axis0.encoder.vel_estimate
+		joint_vel_est = oboard[drive_num].axis0.encoder.vel_estimate
 	elif axis_num == 1:
-		encoder_vel_estimate = oboard[drive_num].axis1.encoder.vel_estimate
+		joint_vel_est = oboard[drive_num].axis1.encoder.vel_estimate
 	
-	return encoder_vel_estimate
+	return joint_vel_est
 
 # returns a joint number for human feedback
 def return_joint_numer(drive_num, axis_num):

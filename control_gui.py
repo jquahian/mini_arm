@@ -23,10 +23,12 @@ prusa_1_connected = False
 
 stream_data = False
 
+# time in ms to poll octoprint/stream other data source
 timeout = 2500
 
 multi_point_instruction_num = 0
 
+# in case we ever need to stream data other than octoprint
 def stream_data_toggle():
     global stream_data
 
@@ -37,8 +39,6 @@ def stream_data_toggle():
 
 # pass in the ip + api key in external json file to octoprint
 def connect_prusa_1():
-    global timeout
-    
     with open('octoprint_data.txt') as json_file:
         data = json.load(json_file)
         prusa_1_data = (data['prusa_1'][0]['printer_address'])
@@ -46,9 +46,10 @@ def connect_prusa_1():
     listener.get_printer_info(prusa_1_data)
     
     if listener.move_arm_to_pos == True:
-        print('BEGINNING THE HARVEST')
+        print('THE HARVEST HAS BEGUN')
 
         # test coords to 'pickup' print
+        # need better system to program the arm for specific moves
         angle_set_1 = [0, 50, 50, 0]
         angle_set_2 = [0, 40, 50, -310]
         angle_set_3 = [90, 40, 50, -310]
@@ -58,26 +59,27 @@ def connect_prusa_1():
         multi_point_control(angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5)
 
 # need to convert this to args or load from a preconfigured jsonn file
+# eww
 def multi_point_control(angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5):
     global multi_point_instruction_num
-
-    position_threshold = 3
     
+    # ewwwwwwwww
     angle_instructions = [angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5]
     
-    j1_current_vel = controller.return_joint_velocity(0, 0, 5)
-    j2_current_vel = controller.return_joint_velocity(0, 1, 5)
-    j3_current_vel = controller.return_joint_velocity(1, 0, -5)
-    j4_current_vel = controller.return_joint_velocity(1, 1, 1)
+    # polls each joint to see if they are moving
+    j1_current_vel = controller.return_joint_velocity(0, 0)
+    j2_current_vel = controller.return_joint_velocity(0, 1)
+    j3_current_vel = controller.return_joint_velocity(1, 0)
+    j4_current_vel = controller.return_joint_velocity(1, 1)
     
-    current_velocities = [j1_current_vel, j2_current_vel, j3_current_vel, j4_current_vel]
-    
-    for i in range(len(current_velocities)):
-        print(f'Joint {i + 1} current velocity (angle): {current_velocities[i]}')
+    velocity_threshold = 0.05
 
-    if j1_current_vel < 0.05 and j2_current_vel < 0.05 and j3_current_vel < 0.05 and j4_current_vel < 0.05:
+    # if all of the joints are pretty much stationary, move to the instructed set
+    if j1_current_vel < velocity_threshold and j2_current_vel < velocity_threshold\
+        and j3_current_vel < velocity_threshold and j4_current_vel < velocity_threshold:
         limit.multi_angle_limit_check(angle_instructions[multi_point_instruction_num])
 
+        # check to see where in the instruction set we are
         if multi_point_instruction_num == (len(angle_instructions) - 1):
             listener.move_arm_to_pos = False
             multi_point_instruction_num = 0

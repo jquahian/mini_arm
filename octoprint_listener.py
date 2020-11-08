@@ -1,16 +1,24 @@
 import requests
 import json
 import time
-# import limit_set as limit
 
 p1_ready_status = []
+
+# toggles whether there is a print ready for pickup
+# internal to script
 harvest_ready = False
+
+# toggles wheether arm needs to move to position
+# only shuts off when the arm has completed all instruction sets given
+# accessed by external script which sends commands to the arm
 move_arm_to_pos = False
 
 '''
 TODOS
 - check if not on same network
-- check to see if event was a print cancel
+- check if server is accessible
+- check to see if event was a print cancel or other print interrupt event
+- make code scale to handle multiple printers
 '''
 
 # polls the requested printed via octoprint API
@@ -38,10 +46,11 @@ def get_printer_info(ip_address):
         p1_ready_status[0] = p1_ready_status[1]
         p1_ready_status[1] = p1_is_ready
         
+        # 'ready' status (not printing -> printing)
         if p1_ready_status[0] == True and p1_ready_status[1] == False:
-            print("PREPARING FOR THE HARVEST")
+            print('PREPARING THE HARVEST')
 
-        # 'ready' status changed (printing -> not printing) get ready to pick the print
+        # 'ready' status changed (printing -> not printing) to standby and get print
         if p1_ready_status[0] == False and p1_ready_status[1] == True:
             harvest_ready = True
 
@@ -52,7 +61,7 @@ def get_printer_info(ip_address):
             move_arm_to_pos = True
             return move_arm_to_pos
     else:
-        print('Nothing to harvest')
+        print('Not harvesting')
 
     # some status outpus
     print(f'Prusa 1 operational: {p1_is_operational}')
@@ -61,9 +70,3 @@ def get_printer_info(ip_address):
     print(f'Prusa 1 ready: {p1_is_ready}')
     print(f'Prusa 1 printing: {p1_is_printing}')
     print('\n')
-
-# # should this be here?    
-# def harvest_prints():
-#     # test coords to 'pickup' print
-#     limit.multi_angle_limit_check([0, 40, 50, -250])
-#     print('Prusa 1 harvested!')

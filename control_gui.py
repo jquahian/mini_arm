@@ -52,19 +52,21 @@ def connect_prusa_1():
         # need better system to program the arm for specific moves
         angle_set_1 = [0, 40, 50, 0]
         angle_set_2 = [0, 40, 50, -310]
-        angle_set_3 = [90, 40, 50, -310]
-        angle_set_4 = [90, 40, 50, 0]
-        angle_set_5 = [0, 0, 0, 0]
+        angle_set_3 = [90, 30, 30, -310]
+        angle_set_4 = [0, 30, 30, -310]
+        angle_set_5 = [0, 40, 50, 0]
+        angle_set_6 = [0, 40, 50, 0]
+        angle_set_7 = [0, 0, 0, 0]
 
-        multi_point_control(angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5)
+        multi_point_control(angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5, angle_set_6, angle_set_7)
 
 # need to convert this to args or load from a preconfigured jsonn file
 # eww
-def multi_point_control(angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5):
+def multi_point_control(angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5, angle_set_6, angle_set_7):
     global multi_point_instruction_num
     
     # ewwwwwwwww
-    angle_instructions = [angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5]
+    angle_instructions = [angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5, angle_set_6, angle_set_7]
     
     # polls each joint to see if they are moving
     j1_current_vel = controller.return_joint_velocity(0, 0)

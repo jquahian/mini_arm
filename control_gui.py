@@ -45,33 +45,18 @@ def connect_prusa_1():
         prusa_1_data = (data['prusa_1'][0]['printer_address'])
 
     listener.get_printer_info(prusa_1_data)
-    
+
     if listener.move_arm_to_pos == True:
         print('THE HARVEST HAS BEGUN')
 
-        # instructions (joint angles) now stored in a separate csv file
-        multi_point_control('test_test.txt')
+        # instructions (joint angles) now stored in a separate text file as csv
+        angle_instructions = instruct.parse_csv('test_test.txt')
 
-        # # test coords to 'pickup' print
-        # # need to create function to read csv of coordinates
-        # angle_set_1 = [0, 40, 50, 0]
-        # angle_set_2 = [0, 40, 50, -310]
-        # angle_set_3 = [90, 30, 30, -310]
-        # angle_set_4 = [0, 30, 30, -310]
-        # angle_set_5 = [0, 40, 50, 0]
-        # angle_set_6 = [0, 40, 50, 0]
-        # angle_set_7 = [0, 0, 0, 0]
+        multi_point_control(angle_instructions)
 
-        # # EWW
-        # multi_point_control(angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5, angle_set_6, angle_set_7)
-
-def multi_point_control(file_name):
+def multi_point_control(angle_instructions):
     global multi_point_instruction_num
 
-    angle_instructions = instruct.parse_csv(file_name)
-    
-    # angle_instructions = [*args]
-    
     # polls each joint to see if they are moving
     j1_current_vel = controller.return_joint_velocity(0, 0)
     j2_current_vel = controller.return_joint_velocity(0, 1)

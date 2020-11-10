@@ -3,11 +3,11 @@ import os
 
 path = 'data'
 
-instruction_set = []
-
 # read data (points/angles/whatever) from csv
 # store data in an array
 def parse_csv(file_name):
+    instruction_set = []
+
     instruct = os.path.join(path, file_name)
 
     with open(instruct) as csv_file:
@@ -21,8 +21,6 @@ def parse_csv(file_name):
         for i in range(len(instruction_set)):
             for j in range(len(instruction_set[i])):
                 instruction_set[i][j] = float(instruction_set[i][j])
-
-        print(instruction_set[0])
 
         print(f'{len(instruction_set)} instructions to process')
         

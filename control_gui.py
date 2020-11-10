@@ -29,6 +29,9 @@ timeout = 2500
 
 multi_point_instruction_num = 0
 
+# set if we want printer 1 to keep printing indefinitely
+p1_print_loop = False
+
 # in case we ever need to stream data other than octoprint
 def stream_data_toggle():
     global stream_data
@@ -40,11 +43,14 @@ def stream_data_toggle():
 
 # pass in the ip + api key in external json file to octoprint
 def connect_prusa_1():
-    with open('octoprint_data.txt') as json_file:
+    with open('p1_octoprint_data.txt') as json_file:
         data = json.load(json_file)
-        prusa_1_data = (data['prusa_1'][0]['printer_address'])
+        prusa_1_api_key = (data['prusa_1'][0]['api_key'])
+        prusa_1_data = (data['prusa_1'][1]['printer_info'])
+        
+        p1_info_url = prusa_1_data + f'?apikey={prusa_1_api_key}'
 
-    listener.get_printer_info(prusa_1_data)
+    listener.get_printer_info(p1_info_url)
 
     if listener.move_arm_to_pos == True:
         print('THE HARVEST HAS BEGUN')
@@ -53,6 +59,20 @@ def connect_prusa_1():
         angle_instructions = instruct.parse_csv('test_test.txt')
 
         multi_point_control(angle_instructions)
+        
+def loop_print():
+    with open('p1_octoprint_data.txt') as json_file:
+        data = json.load(json_file)
+        prusa_1_api_key = (data['prusa_1'][0]['api_key'])
+        prusa_1_file_list = (data['prusa_1'][2]['file_list'])
+
+    # hard coded for now
+    file_name = 'small_rectangle_0.3_PET_MK3S.gcode'
+
+    p1_file_list_url = prusa_1_file_list + '/' + \
+        f'{file_name}' + f'?apikey={prusa_1_api_key}'
+
+    listener.send_print(p1_file_list_url, file_name)
 
 def multi_point_control(angle_instructions):
     global multi_point_instruction_num
@@ -75,6 +95,9 @@ def multi_point_control(angle_instructions):
             listener.move_arm_to_pos = False
             multi_point_instruction_num = 0
             print('Prusa 1 harvested!')
+            
+            if p1_print_loop:
+                loop_print()
         else:
             multi_point_instruction_num += 1
     else:
@@ -120,7 +143,7 @@ layout = [[sg.Button('Connect')],
           [sg.Button('Go')],
           [sg.Text('Output')],
           [sg.Output(size=(65,15), key='OUTPUT')],
-          [sg.Button('Connect to Prusa 1', key='-CONNECT_P1-DISCONNECT_P1-')],
+          [sg.Button('Connect to Prusa 1', key='-CONNECT_P1-DISCONNECT_P1-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-PRINT-')],
           [sg.Button('Exit')]]
 
 window = sg.Window('Arm Control', layout)
@@ -202,10 +225,16 @@ while True:
         stream_data_toggle()
         
         if not prusa_1_connected:            
-            prusa_1_connected = True
+            prusa_1_connected = True                
         else:
             prusa_1_connected = False
 
         window['-CONNECT_P1-DISCONNECT_P1-'].Update('Disconnect Prusa 1' if prusa_1_connected else 'Connect Prusa 1')
+    
+    if event =='-LOOP-PRINT-':
+        p1_print_loop = not p1_print_loop
+        window['-LOOP-PRINT-'].update(p1_print_loop)
+        print(p1_print_loop)
+        
 
 window.close()

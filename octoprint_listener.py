@@ -70,3 +70,12 @@ def get_printer_info(ip_address):
     print(f'Prusa 1 ready: {p1_is_ready}')
     print(f'Prusa 1 printing: {p1_is_printing}')
     print('\n')
+
+# starts print (file stored locally on octoprint)
+def send_print(ip_address, file_name):
+    print_command = {'command' : 'select', 'print': True}
+    start_print = requests.post(ip_address, print_command)
+    
+    print(f'starting print {file_name}')
+    
+    

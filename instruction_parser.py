@@ -15,10 +15,18 @@ def parse_csv(file_name):
 
         for row in csv_reader:
             instruction_set.append(row)
+            
+        # convert values to float since reading from csv returns strings.
         
+        for i in range(len(instruction_set)):
+            for j in range(len(instruction_set[i])):
+                instruction_set[i][j] = float(instruction_set[i][j])
+
+        print(instruction_set[0])
+
         print(f'{len(instruction_set)} instructions to process')
         
         return instruction_set
 
-# # for testing
+# # uncomment for testing
 # parse_csv('test_test.txt')

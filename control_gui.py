@@ -3,6 +3,7 @@ import controller
 import limit_set as limit
 import octoprint_listener as listener
 import json
+import instruction_parser as instruct
 
 sg.theme('DarkAmber')
 
@@ -48,25 +49,28 @@ def connect_prusa_1():
     if listener.move_arm_to_pos == True:
         print('THE HARVEST HAS BEGUN')
 
-        # test coords to 'pickup' print
-        # need better system to program the arm for specific moves
-        angle_set_1 = [0, 40, 50, 0]
-        angle_set_2 = [0, 40, 50, -310]
-        angle_set_3 = [90, 30, 30, -310]
-        angle_set_4 = [0, 30, 30, -310]
-        angle_set_5 = [0, 40, 50, 0]
-        angle_set_6 = [0, 40, 50, 0]
-        angle_set_7 = [0, 0, 0, 0]
+        # instructions (joint angles) now stored in a separate csv file
+        multi_point_control('test_test.txt')
 
-        multi_point_control(angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5, angle_set_6, angle_set_7)
+        # # test coords to 'pickup' print
+        # # need to create function to read csv of coordinates
+        # angle_set_1 = [0, 40, 50, 0]
+        # angle_set_2 = [0, 40, 50, -310]
+        # angle_set_3 = [90, 30, 30, -310]
+        # angle_set_4 = [0, 30, 30, -310]
+        # angle_set_5 = [0, 40, 50, 0]
+        # angle_set_6 = [0, 40, 50, 0]
+        # angle_set_7 = [0, 0, 0, 0]
 
-# need to convert this to args or load from a preconfigured jsonn file
-# eww
-def multi_point_control(angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5, angle_set_6, angle_set_7):
+        # # EWW
+        # multi_point_control(angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5, angle_set_6, angle_set_7)
+
+def multi_point_control(file_name):
     global multi_point_instruction_num
+
+    angle_instructions = instruct.parse_csv(file_name)
     
-    # ewwwwwwwww
-    angle_instructions = [angle_set_1, angle_set_2, angle_set_3, angle_set_4, angle_set_5, angle_set_6, angle_set_7]
+    # angle_instructions = [*args]
     
     # polls each joint to see if they are moving
     j1_current_vel = controller.return_joint_velocity(0, 0)

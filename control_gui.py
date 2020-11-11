@@ -8,7 +8,7 @@ import instruction_parser as instruct
 sg.theme('DarkAmber')
 
 # initial state of joint angles
-joint_angles = [0, -35, 35, 0]
+joint_angles = [0, -35, 75, 0]
 
 # zero'd position for joints 1, 2, 3, 4
 home_angles = [0, 0, 0, 0]
@@ -46,7 +46,7 @@ def connect_prusa_1():
     with open('p1_octoprint_data.txt') as json_file:
         data = json.load(json_file)
         prusa_1_api_key = (data['prusa_1'][0]['api_key'])
-        prusa_1_data = (data['prusa_1'][1]['printer_info'])
+        prusa_1_data = (data['prusa_1'][0]['printer_info'])
         
         p1_info_url = prusa_1_data + f'?apikey={prusa_1_api_key}'
 
@@ -64,10 +64,10 @@ def loop_print():
     with open('p1_octoprint_data.txt') as json_file:
         data = json.load(json_file)
         prusa_1_api_key = (data['prusa_1'][0]['api_key'])
-        prusa_1_file_list = (data['prusa_1'][2]['file_list'])
+        prusa_1_file_list = (data['prusa_1'][0]['file_list'])
 
     # hard coded for now
-    file_name = 'small_rectangle_0.3_PET_MK3S.gcode'
+    file_name = 'small_rectangle_0.3mm_PET_MK3S.gcode'
 
     p1_file_list_url = prusa_1_file_list + '/' + \
         f'{file_name}' + f'?apikey={prusa_1_api_key}'

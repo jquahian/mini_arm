@@ -37,15 +37,13 @@ p6_print_loop = False
 # in case we ever need to stream data other than octoprint
 # not sure how to do this if not all or nothing...
 # once connected, how do we disconnect a specific printer?
-def stream_data_toggle(printer_num):
+def stream_data_toggle():
     global stream_data
 
     if not stream_data:
         stream_data = True
     else:
         stream_data = False
-    
-    return(printer_num)
 
 # pass in the ip + api key in external json file to octoprint
 def connect_printer(printer_num):
@@ -160,8 +158,11 @@ while True:
     # if connected to the printer, ping the printer for status every 15 s
     if stream_data == True:
         event, values = window.read(timeout=timeout)
-        if connect_printer:
-            connect_printer(stream_data_toggle)
+        if prusa_1_connected:
+            connect_printer(0)
+
+        if prusa_6_connected:
+            connect_printer(1)
     else:
         event, values = window.read()
 
@@ -230,7 +231,7 @@ while True:
             [float(values[0]), float(values[2]), float(values[4]), float(values[6])])
     
     if event == '-CONNECT_P1-DISCONNECT_P1-':
-        stream_data_toggle(0)
+        stream_data_toggle()
         
         if not prusa_1_connected:            
             prusa_1_connected = True                
@@ -246,7 +247,7 @@ while True:
 
     if event == '-CONNECT_P6-DISCONNECT_P6-':
         # prusa 6 currently using printer index of 1 since others arent in the json file yet
-        stream_data_toggle(1)
+        stream_data_toggle()
 
         if not prusa_6_connected:
             prusa_6_connected = True

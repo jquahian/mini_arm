@@ -2,7 +2,7 @@ import requests
 import json
 import time
 
-p1_ready_status = []
+printer_ready_status = []
 
 # toggles whether there is a print ready for pickup
 # internal to script
@@ -22,41 +22,41 @@ TODOS
 '''
 
 # polls the requested printed via octoprint API
-def get_printer_info(ip_address):
-    global p1_ready_status
+def get_printer_info(ip_address, printer_name):
+    global printer_ready_status
     global harvest_ready
     global move_arm_to_pos
     
     r = requests.get(ip_address, timeout=5)
     info = r.json()
-
-    p1_is_operational = info['state']['flags']['operational']
-    p1_is_ready = info['state']['flags']['ready']
-    p1_is_printing = info['state']['flags']['printing']
-    p1_t0_temp = info['temperature']['tool0']['actual']
-    p1_bed_temp = info['temperature']['bed']['actual']
+    
+    printer_is_operational = info['state']['flags']['operational']
+    printer_is_ready = info['state']['flags']['ready']
+    printer_is_printing = info['state']['flags']['printing']
+    printer_t0_temp = info['temperature']['tool0']['actual']
+    printer_bed_temp = info['temperature']['bed']['actual']
     
     # to determine if we are to get the print or not, we need to see what state change the printer is in
     # if we have just connected to the printer and we don't know the past/future state, we initialize an emtpy list
     # the first and second ping to octoprint will return the ready status of the printer
     # if first entry in status goes from ready to not ready (which is printing), then when the status changes we get the print
-    if len(p1_ready_status) < 2:
-        p1_ready_status.append(p1_is_ready)
+    if len(printer_ready_status) < 2:
+        printer_ready_status.append(printer_is_ready)
     else:
-        p1_ready_status[0] = p1_ready_status[1]
-        p1_ready_status[1] = p1_is_ready
+        printer_ready_status[0] = printer_ready_status[1]
+        printer_ready_status[1] = printer_is_ready
         
         # 'ready' status (not printing -> printing)
-        if p1_ready_status[0] == True and p1_ready_status[1] == False:
+        if printer_ready_status[0] == True and printer_ready_status[1] == False:
             print('PREPARING THE HARVEST')
 
         # 'ready' status changed (printing -> not printing) to standby and get print
-        if p1_ready_status[0] == False and p1_ready_status[1] == True:
+        if printer_ready_status[0] == False and printer_ready_status[1] == True:
             harvest_ready = True
 
     # when bed temp is < 45 and other safety checks, we move to get the print
     if harvest_ready:
-        if p1_bed_temp < 80 and p1_is_printing == False and p1_is_operational:
+        if printer_bed_temp < 80 and printer_is_printing == False and printer_is_operational:
             harvest_ready = False
             move_arm_to_pos = True
             return move_arm_to_pos
@@ -64,20 +64,20 @@ def get_printer_info(ip_address):
         print('Not harvesting')
 
     # some status outpus
-    print(f'Prusa 1 operational: {p1_is_operational}')
-    print(f'Prusa 1 Nozzle Temp: {p1_t0_temp}')
-    print(f'Prusa 1 Bed Temp: {p1_bed_temp}')
-    print(f'Prusa 1 ready: {p1_is_ready}')
-    print(f'Prusa 1 printing: {p1_is_printing}')
+    print(f'{printer_name} operational: {printer_is_operational}')
+    print(f'{printer_name} Nozzle Temp: {printer_t0_temp}')
+    print(f'{printer_name} Bed Temp: {printer_bed_temp}')
+    print(f'{printer_name} ready: {printer_is_ready}')
+    print(f'{printer_name} printing: {printer_is_printing}')
     print('\n')
 
 # starts print (file stored locally on octoprint)
-def send_print(ip_address, file_name):
+def send_print(ip_address, file_name, printer_name):
     # print_command = {'command' : 'select', 'print': True}
     start_print = requests.post(ip_address, json={'command' : 'select', 'print' : True})
 
     print(start_print)
     
-    print(f'starting print {file_name}')
+    print(f'starting print {file_name} on {printer_name}')
     
     

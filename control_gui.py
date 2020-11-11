@@ -19,8 +19,9 @@ j4_angle = 0
 # position of joint 4 in xyz space
 point_coordinates = [0, 0, 0]
 
-# initial status of connection to first printer
+# initial status of connection to all printers
 prusa_1_connected = False
+prusa_6_connected = False
 
 stream_data = False
 
@@ -29,28 +30,34 @@ timeout = 2500
 
 multi_point_instruction_num = 0
 
-# set if we want printer 1 to keep printing indefinitely
+# set if we want printer(s) to keep printing indefinitely
 p1_print_loop = False
+p6_print_loop = False
 
 # in case we ever need to stream data other than octoprint
-def stream_data_toggle():
+# not sure how to do this if not all or nothing...
+# once connected, how do we disconnect a specific printer?
+def stream_data_toggle(printer_num):
     global stream_data
 
     if not stream_data:
         stream_data = True
     else:
         stream_data = False
+    
+    return(printer_num)
 
 # pass in the ip + api key in external json file to octoprint
-def connect_prusa_1():
-    with open('p1_octoprint_data.txt') as json_file:
+def connect_printer(printer_num):
+    with open('printer_octoprint_data.txt') as json_file:
         data = json.load(json_file)
-        prusa_1_api_key = (data['prusa_1'][0]['api_key'])
-        prusa_1_data = (data['prusa_1'][0]['printer_info'])
+        printer_name = (data['printer_stats'][printer_num]['printer_name'])
+        printer_api_key = (data['printer_stats'][printer_num]['api_key'])
+        printer_data = (data['printer_stats'][printer_num]['printer_info'])
         
-        p1_info_url = prusa_1_data + f'?apikey={prusa_1_api_key}'
+        printer_info_url = printer_data + f'?apikey={printer_api_key}'
 
-    listener.get_printer_info(p1_info_url)
+    listener.get_printer_info(printer_info_url, printer_name)
 
     if listener.move_arm_to_pos == True:
         print('THE HARVEST HAS BEGUN')
@@ -58,22 +65,23 @@ def connect_prusa_1():
         # instructions (joint angles) now stored in a separate text file as csv
         angle_instructions = instruct.parse_csv('test_test.txt')
 
-        multi_point_control(angle_instructions)
+        multi_point_control(angle_instructions, printer_num)
         
-def loop_print():
-    with open('p1_octoprint_data.txt') as json_file:
+def loop_print(printer_num):
+    with open('printer_octoprint_data.txt') as json_file:
         data = json.load(json_file)
-        prusa_1_api_key = (data['prusa_1'][0]['api_key'])
-        prusa_1_file_list = (data['prusa_1'][0]['file_list'])
+        printer_name = (data['printer_stats'][printer_num]['printer_name'])
+        printer_api_key = (data['printer_stats'][printer_num]['api_key'])
+        printer_file_list = (data['printer_stats'][printer_num]['file_list'])
 
     # hard coded for now
     file_name = 'small_rectangle_0.3mm_PET_MK3S.gcode'
 
-    p1_file_list_url = prusa_1_file_list + f'{file_name}' + f'?apikey={prusa_1_api_key}'
+    printer_file_list_url = printer_file_list + f'{file_name}' + f'?apikey={printer_api_key}'
 
-    listener.send_print(p1_file_list_url, file_name)
+    listener.send_print(printer_file_list_url, file_name, printer_name)
 
-def multi_point_control(angle_instructions):
+def multi_point_control(angle_instructions, printer_num):
     global multi_point_instruction_num
 
     # polls each joint to see if they are moving
@@ -93,10 +101,10 @@ def multi_point_control(angle_instructions):
         if multi_point_instruction_num == (len(angle_instructions) - 1):
             listener.move_arm_to_pos = False
             multi_point_instruction_num = 0
-            print('Prusa 1 harvested!')
+            print(f'Prusa {printer_num + 1} harvested!')
             
-            if p1_print_loop:
-                loop_print()
+            if p1_print_loop or p6_print_loop:
+                loop_print(printer_num)
         else:
             multi_point_instruction_num += 1
     else:
@@ -142,7 +150,8 @@ layout = [[sg.Button('Connect')],
           [sg.Button('Go')],
           [sg.Text('Output')],
           [sg.Output(size=(65,15), key='OUTPUT')],
-          [sg.Button('Connect to Prusa 1', key='-CONNECT_P1-DISCONNECT_P1-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-PRINT-')],
+          [sg.Button('Connect to Prusa 1', key='-CONNECT_P1-DISCONNECT_P1-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-P1-PRINT-')],
+          [sg.Button('Connect to Prusa 6', key='-CONNECT_P6-DISCONNECT_P6-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-P6-PRINT-')],
           [sg.Button('Exit')]]
 
 window = sg.Window('Arm Control', layout)
@@ -151,8 +160,8 @@ while True:
     # if connected to the printer, ping the printer for status every 15 s
     if stream_data == True:
         event, values = window.read(timeout=timeout)
-        if connect_prusa_1:
-            connect_prusa_1()
+        if connect_printer:
+            connect_printer(stream_data_toggle)
     else:
         event, values = window.read()
 
@@ -221,7 +230,7 @@ while True:
             [float(values[0]), float(values[2]), float(values[4]), float(values[6])])
     
     if event == '-CONNECT_P1-DISCONNECT_P1-':
-        stream_data_toggle()
+        stream_data_toggle(0)
         
         if not prusa_1_connected:            
             prusa_1_connected = True                
@@ -230,10 +239,26 @@ while True:
 
         window['-CONNECT_P1-DISCONNECT_P1-'].Update('Disconnect Prusa 1' if prusa_1_connected else 'Connect Prusa 1')
     
-    if event =='-LOOP-PRINT-':
+    if event =='-LOOP-P1-PRINT-':
         p1_print_loop = not p1_print_loop
-        window['-LOOP-PRINT-'].update(p1_print_loop)
-        print(p1_print_loop)
-        
+        window['-LOOP-P1-PRINT-'].update(p1_print_loop)
+        print(f'Prusa 1 print loop: {p1_print_loop}')
+
+    if event == '-CONNECT_P6-DISCONNECT_P6-':
+        # prusa 6 currently using printer index of 1 since others arent in the json file yet
+        stream_data_toggle(1)
+
+        if not prusa_6_connected:
+            prusa_6_connected = True
+        else:
+            prusa_6_connected = False
+
+        window['-CONNECT_P6-DISCONNECT_P6-'].Update(
+            'Disconnect Prusa 6' if prusa_6_connected else 'Connect Prusa 6')
+
+    if event == '-LOOP-P6-PRINT-':
+        p6_print_loop = not p6_print_loop
+        window['-LOOP-P6-PRINT-'].update(p6_print_loop)
+        print(f'Prusa 6 print loop: {p6_print_loop}')
 
 window.close()

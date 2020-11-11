@@ -69,8 +69,7 @@ def loop_print():
     # hard coded for now
     file_name = 'small_rectangle_0.3mm_PET_MK3S.gcode'
 
-    p1_file_list_url = prusa_1_file_list + '/' + \
-        f'{file_name}' + f'?apikey={prusa_1_api_key}'
+    p1_file_list_url = prusa_1_file_list + f'{file_name}' + f'?apikey={prusa_1_api_key}'
 
     listener.send_print(p1_file_list_url, file_name)
 

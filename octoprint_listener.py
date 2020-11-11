@@ -73,8 +73,8 @@ def get_printer_info(ip_address):
 
 # starts print (file stored locally on octoprint)
 def send_print(ip_address, file_name):
-    print_command = {'command' : 'select', 'print': True}
-    start_print = requests.post(ip_address, print_command)
+    # print_command = {'command' : 'select', 'print': True}
+    start_print = requests.post(ip_address, json={'command' : 'select', 'print' : True})
 
     print(start_print)
     

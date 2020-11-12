@@ -73,7 +73,7 @@ def loop_print(printer_num):
         printer_file_list = (data['printer_stats'][printer_num]['file_list'])
 
     # hard coded for now
-    file_name = 'small_rectangle_0.3mm_PET_MK3S.gcode'
+    file_name = 'rectangle_vase_0.3mm_PET_MK3S.gcode'
 
     printer_file_list_url = printer_file_list + f'{file_name}' + f'?apikey={printer_api_key}'
 

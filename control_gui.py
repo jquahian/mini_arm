@@ -148,8 +148,8 @@ layout = [[sg.Button('Connect')],
           [sg.Button('Go')],
           [sg.Text('Output')],
           [sg.Output(size=(65,15), key='OUTPUT')],
-          [sg.Button('Connect to Prusa 1', key='-CONNECT_P1-DISCONNECT_P1-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-P1-PRINT-')],
-          [sg.Button('Connect to Prusa 6', key='-CONNECT_P6-DISCONNECT_P6-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-P6-PRINT-')],
+          [sg.Button('Connect Prusa 1', key='-CONNECT_P1-DISCONNECT_P1-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-P1-PRINT-')],
+          [sg.Button('Connect Prusa 6', key='-CONNECT_P6-DISCONNECT_P6-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-P6-PRINT-')],
           [sg.Button('Exit')]]
 
 window = sg.Window('Arm Control', layout)

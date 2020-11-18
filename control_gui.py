@@ -4,6 +4,7 @@ import limit_set as limit
 import octoprint_listener as listener
 import json
 import instruction_parser as instruct
+import clear_bed_detect
 
 sg.theme('DarkAmber')
 
@@ -58,6 +59,9 @@ def connect_printer(printer_num):
     listener.get_printer_info(printer_info_url, printer_name)
 
     if listener.move_arm_to_pos == True:
+        # take picture of the clear bed to set ground truth for 'clear' initial state
+        clear_bed_detect.take_single_picture('initial')
+        
         print('THE HARVEST HAS BEGUN')
 
         # instructions (joint angles) now stored in a separate text file as csv
@@ -66,18 +70,25 @@ def connect_printer(printer_num):
         multi_point_control(angle_instructions, printer_num)
         
 def loop_print(printer_num):
-    with open('printer_octoprint_data.txt') as json_file:
-        data = json.load(json_file)
-        printer_name = (data['printer_stats'][printer_num]['printer_name'])
-        printer_api_key = (data['printer_stats'][printer_num]['api_key'])
-        printer_file_list = (data['printer_stats'][printer_num]['file_list'])
+    # take picture of bed to check if the arm has actually gotten the print off
+    clear_bed_detect.take_single_picture('check')
+    
+    if clear_bed_detect.print_detector():
+        # needs popup to clear
+        print('OBJECT ON BED!  Clear bed before printing')
+    else:
+        with open('printer_octoprint_data.txt') as json_file:
+            data = json.load(json_file)
+            printer_name = (data['printer_stats'][printer_num]['printer_name'])
+            printer_api_key = (data['printer_stats'][printer_num]['api_key'])
+            printer_file_list = (data['printer_stats'][printer_num]['file_list'])
 
-    # hard coded for now
-    file_name = 'rectangle_vase_0.3mm_PET_MK3S.gcode'
+        # hard coded for now
+        file_name = 'rectangle_vase_0.3mm_PET_MK3S.gcode'
 
-    printer_file_list_url = printer_file_list + f'{file_name}' + f'?apikey={printer_api_key}'
+        printer_file_list_url = printer_file_list + f'{file_name}' + f'?apikey={printer_api_key}'
 
-    listener.send_print(printer_file_list_url, file_name, printer_name)
+        listener.send_print(printer_file_list_url, file_name, printer_name)
 
 def multi_point_control(angle_instructions, printer_num):
     global multi_point_instruction_num

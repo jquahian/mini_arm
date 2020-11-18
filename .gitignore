@@ -1,5 +1,6 @@
 venv
 tests
 data
+images
 /to_json.py
 /*.txt

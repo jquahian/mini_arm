@@ -51,7 +51,7 @@ def print_detector():
     roi_check = img_check[roi_height_min: roi_height_max,
                           roi_width_min: roi_width_max]
     
-    sub = cv.subtract(roi_initial, roi_check)
+    sub = cv.subtract(roi_check, roi_initial)
     new_threshold = cv.inRange(sub, (75, 75, 75), (255, 255, 255))
 
     # so we can see the process
@@ -70,8 +70,8 @@ def print_detector():
     return print_detected
 
 ## for testing
-# take_single_picture('check')
-# print_detector()
+take_single_picture('check')
+print_detector()
         
     
     

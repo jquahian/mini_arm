@@ -9,7 +9,7 @@ import clear_bed_detect
 sg.theme('DarkAmber')
 
 # initial state of joint angles
-joint_angles = [0, -35, 75, 0]
+joint_angles = [0, -35, 75, -150]
 
 # zero'd position for joints 1, 2, 3, 4
 home_angles = [0, 0, 0, 0]
@@ -74,8 +74,8 @@ def loop_print(printer_num):
     clear_bed_detect.take_single_picture('check')
     
     if clear_bed_detect.print_detector():
-        # needs popup to clear
-        print('OBJECT ON BED!  Clear bed before printing')
+        # needs popup to clear later...
+        print('Clear bed before proceeding')
     else:
         with open('printer_octoprint_data.txt') as json_file:
             data = json.load(json_file)

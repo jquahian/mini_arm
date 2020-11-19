@@ -59,8 +59,6 @@ def connect_printer(printer_num):
     listener.get_printer_info(printer_info_url, printer_name)
 
     if listener.move_arm_to_pos == True:
-        # take picture of the clear bed to set ground truth for 'clear' initial state
-        clear_bed_detect.take_single_picture('initial')
         
         print('THE HARVEST HAS BEGUN')
 
@@ -261,6 +259,8 @@ while True:
         stream_data_toggle()
 
         if not prusa_6_connected:
+            # take picture of the clear bed to set ground truth for 'clear' initial state
+            clear_bed_detect.take_single_picture('initial')
             prusa_6_connected = True
         else:
             prusa_6_connected = False

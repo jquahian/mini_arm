@@ -5,9 +5,9 @@ from pathlib import Path
 # hard-coded ROI for images from webcam
 
 roi_width_min = 0
-roi_width_max = 1280
-roi_height_min = 450
-roi_height_max = 720
+roi_width_max = 640
+roi_height_min = 285
+roi_height_max = 480
 
 # 1. check if we have a folder called 'images' make if not there
 Path('images').mkdir(parents=True, exist_ok=True)
@@ -19,7 +19,7 @@ images = os.listdir('images')
 #   b. picture after arm picked up print: check state
 
 def take_single_picture(bed_state):
-    # 720 x 1280 x 3
+    # 480 x 640 x 3
     camera = cv.VideoCapture(0)
 
     for i in range(1):
@@ -35,7 +35,7 @@ def take_single_picture(bed_state):
         
         cv.imwrite(os.path.join('images', file_name), image)
         
-    print(f'{bed_state} print bed picture recorded')
+    print(f'in {bed_state} state -- Print bed picture recorded')
 
 # 3. compare check vs. clear state
 #   a. return True if clear, False if not clear
@@ -53,7 +53,13 @@ def print_detector():
     
     sub = cv.subtract(roi_initial, roi_check)
     new_threshold = cv.inRange(sub, (75, 75, 75), (255, 255, 255))
-    
+
+    # so we can see the process
+    cv.imwrite(os.path.join('images', 'roi_initial.jpg'), roi_initial)
+    cv.imwrite(os.path.join('images', 'roi_check.jpg'), roi_check)
+    cv.imwrite(os.path.join('images', 'sub_mask.jpg'), sub)
+    cv.imwrite(os.path.join('images', 'thresholded_image.jpg'), new_threshold)
+
     if 255 in new_threshold:
         print(f'possible print on bed')
         print_detected = True

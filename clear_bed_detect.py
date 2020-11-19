@@ -70,8 +70,8 @@ def print_detector():
     return print_detected
 
 ## for testing
-take_single_picture('check')
-print_detector()
+# take_single_picture('check')
+# print_detector()
         
     
     

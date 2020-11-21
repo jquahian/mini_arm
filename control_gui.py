@@ -161,7 +161,8 @@ layout = [[sg.Button('Connect')],
           [sg.Button('Connect Prusa 6', key='-CONNECT_P6-DISCONNECT_P6-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-P6-PRINT-')],
           [sg.Button('Exit')]]
 
-window = sg.Window('Arm Control', layout)
+window = sg.Window('Arm Control', layout).Finalize()
+window.Maximize()
 
 while True:
     # if connected to the printer, ping the printer for status every 15 s

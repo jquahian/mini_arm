@@ -161,7 +161,7 @@ layout = [[sg.Button('Connect')],
           [sg.Button('Connect Prusa 6', key='-CONNECT_P6-DISCONNECT_P6-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-P6-PRINT-')],
           [sg.Button('Exit')]]
 
-window = sg.Window('Arm Control', layout, location=(0,0), size=(1024,600)).Finalize()
+window = sg.Window('Arm Control', layout, location=(0,0), size=(1024,600))
 # window.Maximize()
 
 while True:

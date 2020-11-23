@@ -252,7 +252,7 @@ while True:
     if event == 'Connect':
         controller.connect_to_boards()
     
-    if event == 'Calibrate All':
+    if event == 'Calibrate':
         controller.calibrate_all()
         
         # move joints to initial pose
@@ -260,7 +260,7 @@ while True:
         for i in range(len(joint_angles)):
             values[i] = joint_angles[i]
 
-    if event == 'Home All':
+    if event == 'Home':
         
         # moves arm back to zero pose
         limit.multi_angle_limit_check(home_angles)
@@ -268,47 +268,47 @@ while True:
             values[i] = home_angles[i]
 
     if event == 'Go':
-        limit.coordinate_limit_check(float(values[8]), float(values[9]), float(values[10]), float(values[11]))
+        limit.coordinate_limit_check(float(values[4]), float(values[5]), float(values[6]), float(values[7]))
         
     if event == 'Set J1':
         limit.single_angle_limit_check(0, 0, 5, float(values[0]), True)
         
     if event == 'Set J2':
-        limit.single_angle_limit_check(0, 1, 5, float(values[2]), True)
+        limit.single_angle_limit_check(0, 1, 5, float(values[1]), True)
         
     if event == 'Set J3':
-        limit.single_angle_limit_check(1, 0, -5, float(values[4]), True)
+        limit.single_angle_limit_check(1, 0, -5, float(values[2]), True)
 
     if event == 'Set J4':
-        limit.single_angle_limit_check(1, 1, 1, float(values[6]), True)
+        limit.single_angle_limit_check(1, 1, 1, float(values[3]), True)
         
     if event == '-J1':
-        limit.single_angle_limit_check(0, 0, 5, -float(values[1]), False)
+        limit.single_angle_limit_check(0, 0, 5, -float(values[8]), False)
     
     if event == '+J1':
-        limit.single_angle_limit_check(0, 0, 5, float(values[1]), False)
+        limit.single_angle_limit_check(0, 0, 5, float(values[8]), False)
     
     if event == '-J2':
-        limit.single_angle_limit_check(0, 1, 5, -float(values[3]), False)
+        limit.single_angle_limit_check(0, 1, 5, -float(values[9]), False)
 
     if event == '+J2':
-        limit.single_angle_limit_check(0, 1, 5, float(values[3]), False)
+        limit.single_angle_limit_check(0, 1, 5, float(values[9]), False)
 
     if event == '-J3':
-        limit.single_angle_limit_check(1, 0, -5, -float(values[5]), False)
+        limit.single_angle_limit_check(1, 0, -5, -float(values[10]), False)
 
     if event == '+J3':
-        limit.single_angle_limit_check(1, 0, -5, float(values[5]), False)
+        limit.single_angle_limit_check(1, 0, -5, float(values[10]), False)
 
     if event == '-J4':
-        limit.single_angle_limit_check(1, 1, 1, -float(values[7]), False)
+        limit.single_angle_limit_check(1, 1, 1, -float(values[11]), False)
 
     if event == '+J4':
-        limit.single_angle_limit_check(1, 1, 1, float(values[7]), False)
+        limit.single_angle_limit_check(1, 1, 1, float(values[11]), False)
 
     if event == 'Set All':
         limit.multi_angle_limit_check(
-            [float(values[0]), float(values[2]), float(values[4]), float(values[6])])
+            [float(values[0]), float(values[1]), float(values[3]), float(values[4])])
     
     if event == '-CONNECT_P1-DISCONNECT_P1-':
         stream_data_toggle()

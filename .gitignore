@@ -4,3 +4,4 @@ data
 images
 /to_json.py
 /*.txt
+.vscode

@@ -6,7 +6,7 @@ import json
 import instruction_parser as instruct
 import clear_bed_detect
 
-sg.theme('DarkAmber')
+sg.theme('DarkBlack')
 sg.SetOptions(font='Helvetica 12', auto_size_buttons=True)
 
 # initial state of joint angles
@@ -125,41 +125,41 @@ col_1 = [[sg.Button('Connect'), sg.Button('Calibrate'), sg.Button('Home')],
         [sg.T('')],
         [sg.Text('Absolute Joint motion')],
         [sg.Text('J1 Angle: '),
-        sg.Input('0', size=(10, 10), justification='center'),
+        sg.Input('0', key='-J1-ABS-', size=(10, 10), justification='center'),
         sg.Button('Set J1')],
         [sg.Text('J2 Angle: '),
-        sg.Input('0', size=(10, 10), justification='center'),
+        sg.Input('0', key='-J2-ABS-', size=(10, 10), justification='center'),
         sg.Button('Set J2')],
         [sg.Text('J3 Angle: '),
-        sg.Input('0', size=(10, 10), justification='center'),
+        sg.Input('0', key='-J3-ABS-', size=(10, 10), justification='center'),
         sg.Button('Set J3')],
         [sg.Text('J4 Angle: '),
-        sg.Input('0', size=(10, 10), justification='center'),
+        sg.Input('0', key='-J4-ABS-', size=(10, 10), justification='center'),
         sg.Button('Set J4')],
         [sg.Button('Set All')],
         [sg.T('')],
         [sg.Text('Move to Point')],
-        [sg.Text('x - Coordinate: '), sg.Input('0', size=(10, 10), justification='center')],
-        [sg.Text('y - Coordinate: '), sg.Input('0', size=(10, 10), justification='center')],
-        [sg.Text('z - Coordinate: '), sg.Input('0', size=(10, 10), justification='center')],
-        [sg.Text('End-effector   : '), sg.Input('0', size=(10, 10), justification='center')],
+        [sg.Text('x - Coordinate: '), sg.Input('0', key='-X-COORD-', size=(10, 10), justification='center')],
+        [sg.Text('y - Coordinate: '), sg.Input('0', key='-Y-COORD-', size=(10, 10), justification='center')],
+        [sg.Text('z - Coordinate: '), sg.Input('0', key='-Z-COORD-', size=(10, 10), justification='center')],
+        [sg.Text('End-effector   : '), sg.Input('0', key='-E-COORD-', size=(10, 10), justification='center')],
         [sg.Button('Go')]]
 
 col_2 = [[sg.Text('Relative Joint Motion')],
          [sg.Text('J1 Relative: '),
-          sg.Input('10', size=(5, 10), justification='center'),
+          sg.Input('10', key='-J1-REL-', size=(5, 10), justification='center'),
           sg.Button('-J1'),
           sg.Button('+J1')],
          [sg.Text('J2 Relative: '),
-          sg.Input('10', size=(5, 10), justification='center'),
+          sg.Input('10', key='-J2-REL-', size=(5, 10), justification='center'),
           sg.Button('-J2'),
           sg.Button('+J2')],
          [sg.Text('J3 Relative: '),
-          sg.Input('10', size=(5, 10), justification='center'),
+          sg.Input('10', key='-J3-REL-', size=(5, 10), justification='center'),
           sg.Button('-J3'),
           sg.Button('+J3')],
          [sg.Text('J4 Relative: '),
-          sg.Input('10', size=(5, 10), justification='center'),
+          sg.Input('10', key='-J4-REL-', size=(5, 10), justification='center'),
           sg.Button('-J4'),
           sg.Button('+J4')],
          [sg.T('')],
@@ -167,7 +167,7 @@ col_2 = [[sg.Text('Relative Joint Motion')],
          [sg.Button('Connect Prusa 1', key='-CONNECT_P1-DISCONNECT_P1-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-P1-PRINT-')],
          [sg.Button('Connect Prusa 6', key='-CONNECT_P6-DISCONNECT_P6-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-P6-PRINT-')]]
 
-test_list = ['one', 'two', 'three']
+test_list = []
 
 col_3 = [[sg.Text('Print Control')],
          [sg.T('')],
@@ -187,52 +187,7 @@ layout = [[sg.Column(col_1, element_justification='r'), sg.VSeparator(),
            sg.Column(col_3, element_justification='r'), sg.VSeparator(),
            sg.Column(col_4, element_justification='r')]]
 
-# layout = [[sg.Button('Connect')],
-#           [sg.Button('Calibrate All'), sg.Button('Home All')],
-#           [sg.Text('Manual Joint Control')],
-#           [sg.Text('J1 Angle: '), 
-#            sg.Input('0', size=(10, 10), justification='center'),
-#            sg.Button('Set J1'), 
-#            sg.Text('Relative: '), 
-#            sg.Input('10', size=(5,10), justification='center'), 
-#            sg.Button('-J1'), 
-#            sg.Button('+J1')],
-#           [sg.Text('J2 Angle: '), 
-#            sg.Input('0', size=(10, 10), justification='center'), 
-#            sg.Button('Set J2'), 
-#            sg.Text('Relative: '), 
-#            sg.Input('10', size=(5,10), justification='center'),
-#            sg.Button('-J2'), 
-#            sg.Button('+J2')],
-#           [sg.Text('J3 Angle: '), 
-#            sg.Input('0', size=(10, 10), justification='center'), 
-#            sg.Button('Set J3'), 
-#            sg.Text('Relative: '), 
-#            sg.Input('10', size=(5,10), justification='center'),
-#            sg.Button('-J3'), 
-#            sg.Button('+J3')],
-#           [sg.Text('J4 Angle: '), 
-#            sg.Input('0', size=(10, 10), justification='center'), 
-#            sg.Button('Set J4'), 
-#            sg.Text('Relative: '), 
-#            sg.Input('10', size=(5,10), justification='center'),
-#            sg.Button('-J4'), 
-#            sg.Button('+J4')],
-#           [sg.Button('Set All')],
-#           [sg.Text('Move to Point')],
-#           [sg.Text('x - Coordinate: '), sg.Input('0', size=(10, 10), justification='center')],
-#           [sg.Text('y - Coordinate: '), sg.Input('0', size=(10, 10), justification='center')],
-#           [sg.Text('z - Coordinate: '), sg.Input('0', size=(10, 10), justification='center')],
-#           [sg.Text('End-effector   : '), sg.Input('0', size=(10, 10), justification='center')],
-#           [sg.Button('Go')],
-#           [sg.Text('Output')],
-#           [sg.Output(size=(65,15), key='OUTPUT')],
-#           [sg.Button('Connect Prusa 1', key='-CONNECT_P1-DISCONNECT_P1-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-P1-PRINT-')],
-#           [sg.Button('Connect Prusa 6', key='-CONNECT_P6-DISCONNECT_P6-'), sg.Checkbox('Loop', enable_events=True, key='-LOOP-P6-PRINT-')],
-#           [sg.Button('Exit')]]
-
 window = sg.Window('Arm Control', layout, location=(0,0), size=(1024,600))
-# window.Maximize()
 
 while True:
     # if connected to the printer, ping the printer for status every 15 s
@@ -267,49 +222,49 @@ while True:
         for i in range(len(home_angles)):
             values[i] = home_angles[i]
 
-    if event == 'Go':
-        limit.coordinate_limit_check(float(values[4]), float(values[5]), float(values[6]), float(values[7]))
-        
     if event == 'Set J1':
-        limit.single_angle_limit_check(0, 0, 5, float(values[0]), True)
+        limit.single_angle_limit_check(0, 0, 5, float(values['-J1-ABS-']), True)
         
     if event == 'Set J2':
-        limit.single_angle_limit_check(0, 1, 5, float(values[1]), True)
+        limit.single_angle_limit_check(0, 1, 5, float(values['-J2-ABS-']), True)
         
     if event == 'Set J3':
-        limit.single_angle_limit_check(1, 0, -5, float(values[2]), True)
+        limit.single_angle_limit_check(1, 0, -5, float(values['-J3-ABS-']), True)
 
     if event == 'Set J4':
-        limit.single_angle_limit_check(1, 1, 1, float(values[3]), True)
-        
-    if event == '-J1':
-        limit.single_angle_limit_check(0, 0, 5, -float(values[8]), False)
+        limit.single_angle_limit_check(1, 1, 1, float(values['-J4-ABS-']), True)
     
-    if event == '+J1':
-        limit.single_angle_limit_check(0, 0, 5, float(values[8]), False)
-    
-    if event == '-J2':
-        limit.single_angle_limit_check(0, 1, 5, -float(values[9]), False)
-
-    if event == '+J2':
-        limit.single_angle_limit_check(0, 1, 5, float(values[9]), False)
-
-    if event == '-J3':
-        limit.single_angle_limit_check(1, 0, -5, -float(values[10]), False)
-
-    if event == '+J3':
-        limit.single_angle_limit_check(1, 0, -5, float(values[10]), False)
-
-    if event == '-J4':
-        limit.single_angle_limit_check(1, 1, 1, -float(values[11]), False)
-
-    if event == '+J4':
-        limit.single_angle_limit_check(1, 1, 1, float(values[11]), False)
-
     if event == 'Set All':
         limit.multi_angle_limit_check(
             [float(values[0]), float(values[1]), float(values[3]), float(values[4])])
     
+    if event == 'Go':
+        limit.coordinate_limit_check(float(values['-X-COORD-']), float(values['-Y-COORD-']), float(values['-Z-COORD-']), float(values['-E-COORD-']))
+        
+    if event == '-J1':
+        limit.single_angle_limit_check(0, 0, 5, -float(values['-J1-REL-']), False)
+    
+    if event == '+J1':
+        limit.single_angle_limit_check(0, 0, 5, float(values['-J1-REL-']), False)
+    
+    if event == '-J2':
+        limit.single_angle_limit_check(0, 1, 5, -float(values['-J2-REL-']), False)
+
+    if event == '+J2':
+        limit.single_angle_limit_check(0, 1, 5, float(values['-J2-REL-']), False)
+
+    if event == '-J3':
+        limit.single_angle_limit_check(1, 0, -5, -float(values['-J3-REL-']), False)
+
+    if event == '+J3':
+        limit.single_angle_limit_check(1, 0, -5, float(values['-J3-REL-']), False)
+
+    if event == '-J4':
+        limit.single_angle_limit_check(1, 1, 1, -float(values['-J4-REL-']), False)
+
+    if event == '+J4':
+        limit.single_angle_limit_check(1, 1, 1, float(values['-J4-REL-']), False)
+
     if event == '-CONNECT_P1-DISCONNECT_P1-':
         stream_data_toggle()
         

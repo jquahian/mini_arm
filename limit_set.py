@@ -75,12 +75,12 @@ def coordinate_limit_check(x, y, z, joint_4):
     dist_to_point = math.sqrt(pow(x - origin_x, 2) + pow(y - origin_y, 2) + pow(z - origin_z, 2))
     
     # only accept positive x-coordinates and z not less than distance from j1 to j2
-    if x < 0 or z < ik.j1_j2_length:
+    if x < 0 or z < ik.j1_j2_length - ik.j3_tcp_length:
         print(f'x and/or z-coordinate(s) are invalid: x > 0, z > {ik.j1_j2_length}')
         return
     
     # if point the point x, y, z is greater than or equal the radius of the work volume sphere, reject
-    elif dist_to_point >= (ik.j2_j3_length + ik.j3_j4_length):
+    elif dist_to_point >= (ik.j2_j3_length + ik.j3_tcp_length):
         print(f'coordinates of {x, y, z} are outside of work volume {dist_to_point}')    
         return
     

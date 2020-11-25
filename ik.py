@@ -5,6 +5,8 @@ import limit_set as limit
 j1_j2_length = 231.50
 j2_j3_length = 77.279
 j3_j4_length = 94.055
+j4_tcp_length = 133.500
+j3_tcp_length = j3_j4_length + j4_tcp_length
 
 # has a div by zero error when entering xyz : 00z.  Needs exception for these coords
 def solve_ik(x, y, z, joint_4):
@@ -21,13 +23,13 @@ def solve_ik(x, y, z, joint_4):
     
     # find angle between joint length 2 and joint length 3
     phi_3 = math.acos((pow(j2_effector_length, 2) - pow(j2_j3_length, 2) -
-                       pow(j3_j4_length, 2)) / (-2 * j2_j3_length * j3_j4_length))
+                       pow(j3_tcp_length, 2)) / (-2 * j2_j3_length * j3_tcp_length))
         
     # find rotation of joint 3
     j3_theta = round(math.degrees(math.radians(180) - phi_3), 3)
     
     # angle between the j2_effector_length and horizontal x-axis    
-    phi_2 = math.acos((pow(j3_j4_length, 2) - pow(j2_j3_length, 2) -
+    phi_2 = math.acos((pow(j3_tcp_length, 2) - pow(j2_j3_length, 2) -
                        pow(j2_effector_length, 2)) / (-2 * j2_j3_length * j2_effector_length))
     
     # angle between the j2_effector_length and the vertical z-axis

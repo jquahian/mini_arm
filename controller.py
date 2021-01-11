@@ -5,9 +5,11 @@ from odrive.enums import *
 # identify boards
 odrv0 = '207D37A53548'
 odrv1 = '387F37573437'
+odrv2 = '20873592524B'
 
 is_connected = False
-oboard = [odrv0, odrv1]
+oboard = [odrv0, odrv1, odrv2]
+# oboard = [odrv0, odrv1]
 
 # connect to boards
 def connect_to_boards():
@@ -19,6 +21,7 @@ def connect_to_boards():
 
 	oboard[0] = odrive.find_any(serial_number=odrv0)
 	oboard[1] = odrive.find_any(serial_number=odrv1)
+	oboard[2] = odrive.find_any(serial_number=odrv2)
 	is_connected = True
 
 	print('Arm connected')
@@ -48,6 +51,16 @@ def calibrate_all():
 				time.sleep(0.1)
 
 		board.axis1.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
+
+	# set homing procedure for joint A and set to printer #1's location
+	oboard[2].axis0.requested_state = AXIS_STATE_HOMING
+
+	while oboard[2].axis0.current_state != AXIS_STATE_IDLE:
+			time.sleep(0.1)
+	
+	oboard[2].axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
+	
+	move_axis(2, 0, 5, 792, True)
 
 	print('Joint calibration complete!')
 
@@ -132,5 +145,7 @@ def return_joint_numer(drive_num, axis_num):
 		joint_num = 3
 	elif drive_num == 1 and axis_num == 1:
 		joint_num = 4
+	elif drive_num == 2 and axis_num == 0:
+		joint_num = 5
   
 	return joint_num

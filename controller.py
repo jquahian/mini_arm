@@ -60,9 +60,30 @@ def calibrate_all():
 	
 	oboard[2].axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 	
-	move_axis(2, 0, 5, 792, True)
+	move_horizontal(8)
 
 	print('Joint calibration complete!')
+ 
+def move_horizontal(distance):
+    """
+    Determine num of rotations to move linear distance (mm)
+    
+    **5:1 gear ratio reduction**
+    
+	1 turn of pulley = 5 turns of motor!
+	pulley = 20 teeth
+	belt = 5 teeth/cm
+
+	1 turn of pulley = 20 teeth = 4 cm = 40mm
+	1 turn of pulley = 5 turns of motor
+	5 turns of motor = 40 mm
+
+	**1 turn of motor = 8 mm**
+    """
+    
+    num_rotations = distance/8
+    
+    oboard[2].axis0.controller.input_pos = num_rotations
 
 def move_axis(drive_num, axis_num, axis_gear_ratio, degrees, is_absolute):
 	global oboard

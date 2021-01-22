@@ -1,10 +1,12 @@
 import math
 import ik
 from controller import move_axis, return_joint_degrees, return_joint_numer
+
 origin_x = 0
 origin_y = 0
 origin_z = ik.j1_j2_length
 
+# j1, j2, j3, j4 values are all in angles (degrees)
 j1_theta_min = -90
 j1_theta_max = 90
 
@@ -16,6 +18,10 @@ j3_theta_max = 90
 
 j4_theta_min = -530
 j4_theta_max = 0
+
+# j5 is horzontal axis, values in linear distance (mm)
+j5_theata_min = 8
+j5_theta_max = 671
 
 def single_angle_limit_check(drive_num, axis_num, gear_ratio, angle, is_absolute):
     joint_num = return_joint_numer(drive_num, axis_num)

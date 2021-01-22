@@ -53,6 +53,7 @@ def calibrate_all():
 		board.axis1.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 
 	# set homing procedure for joint A and set to printer #1's location
+	oboard[2].axis0.controller.config.homing_speed = 2
 	oboard[2].axis0.requested_state = AXIS_STATE_HOMING
 
 	while oboard[2].axis0.current_state != AXIS_STATE_IDLE:

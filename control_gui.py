@@ -236,7 +236,7 @@ while True:
     
     if event == 'Set All':
         limit.multi_angle_limit_check(
-            [float(values[0]), float(values[1]), float(values[3]), float(values[4])])
+            [float(values['-J1-ABS-']), float(values['-J2-ABS-']), float(values['-J3-ABS-']), float(values['-J4-ABS-'])])
     
     if event == 'Go':
         limit.coordinate_limit_check(float(values['-X-COORD-']), float(values['-Y-COORD-']), float(values['-Z-COORD-']), float(values['-E-COORD-']))
